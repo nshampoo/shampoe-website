@@ -10,12 +10,7 @@
 <style>
 body { min-height: 100vh; display: flex; flex-direction: column; text-align: center; }
 main { flex: 1; display: grid; place-content: center; padding: 16px; }
-.emoji { font-size: 96px; line-height: 1; display: inline-block; animation: tinker 2.4s ease-in-out infinite; }
-@keyframes tinker { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
-@media (prefers-reduced-motion: reduce) { .emoji { animation: none; } }
-p { color: var(--muted); margin: 12px 0 32px; }
-main a { color: var(--link); text-decoration: none; font-weight: 600; }
-main a:hover { text-decoration: underline; }
+p { color: var(--muted); margin: 0; }
 </style>
 </head>
 <body>
@@ -26,9 +21,7 @@ main a:hover { text-decoration: underline; }
   </nav>
 </header>
 <main>
-  <div class="emoji" aria-hidden="true">🛠️</div>
   <p>tinkering…</p>
-  <a href="/citibike/">🚲 Citi Bike Tides</a>
 </main>
 </body>
 </html>
