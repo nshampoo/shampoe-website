@@ -12,18 +12,22 @@ import { Construct } from 'constructs';
 export interface SiteStackProps extends cdk.StackProps {
   domainName: string;
   hostedZoneId: string;
-  /** The Citi Bike Tides CloudFront domain, served here under /citibike/app/ (embedded by site/citibike/). */
-  citibikeDomain: string;
+  /**
+   * Apps hosted on their own CloudFront, by name: `{ citibike: 'dxxxx.cloudfront.net' }` serves that
+   * distribution at /citibike/app/, which the page site/citibike/ embeds under the header.
+   */
+  apps: Record<string, string>;
 }
 
 /**
  * shampoe.com
  *
  *   shampoe.com, www.shampoe.com ──> CloudFront (HTTPS)
- *     ├─ /citibike/app/*  ──> Citi Bike Tides' own CloudFront (prefix stripped; its live data keeps updating)
- *     └─ everything else  ──> site bucket (private; uploaded from site/ by `cdk deploy`)
+ *     ├─ /<app>/app/*    ──> that app's own CloudFront (prefix stripped), e.g. Citi Bike Tides, Volo
+ *     └─ everything else ──> site bucket (private; uploaded from site/ by `cdk deploy`)
  *
- * /citibike/ is a page in site/ that shows the header over an iframe of /citibike/app/.
+ * /<app>/ is a page in site/ that shows the header over an iframe of /<app>/app/, so each app keeps
+ * deploying on its own and shows up here live.
  *
  * www redirects to the bare domain.
  */
@@ -55,38 +59,63 @@ export class SiteStack extends cdk.Stack {
 
     // Runs on every request:
     //   www -> bare domain
-    //   /citibike, /citibike/app -> add the trailing slash (so relative data/... fetches resolve under it)
-    //   /citibike/app/x -> /x for the Citi Bike origin
+    //   /<app>, /<app>/app -> add the trailing slash (so the app's relative fetches resolve under it)
+    //   /<app>/app/x -> /x for that app's origin
     //   any other path ending in / -> its index.html in the bucket
+    // Redirects keep the query string, so invite links like /volo/?invite=... survive.
     // The cache key uses the rewritten path, so /citibike/app/ and / would share one cache entry;
-    // the x-site header (keyed on by citibikeCache below) keeps them apart.
+    // the x-site header (keyed on by appCache below) keeps them apart.
     const router = new cloudfront.Function(this, 'Router', {
       runtime: cloudfront.FunctionRuntime.JS_2_0,
       code: cloudfront.FunctionCode.fromInline(`
-function redirect(location) {
+var APPS = ${JSON.stringify(Object.keys(props.apps))};
+function redirect(req, uri) {
+  var qs = Object.keys(req.querystring).map(function (k) {
+    var v = req.querystring[k].value;
+    return v === '' ? k : k + '=' + v;
+  }).join('&');
+  var location = uri + (qs ? '?' + qs : '');
   return { statusCode: 301, statusDescription: 'Moved Permanently', headers: { location: { value: location } } };
 }
 function handler(event) {
   var req = event.request;
-  if (req.headers.host && req.headers.host.value === '${wwwName}') return redirect('https://${domainName}' + req.uri);
-  if (req.uri === '/citibike' || req.uri === '/citibike/app') return redirect(req.uri + '/');
-  if (req.uri.startsWith('/citibike/app/')) {
-    req.uri = req.uri.slice('/citibike/app'.length);
-    req.headers['x-site'] = { value: 'citibike' };
-  } else if (req.uri.endsWith('/')) {
-    req.uri += 'index.html';
+  if (req.headers.host && req.headers.host.value === '${wwwName}') return redirect(req, 'https://${domainName}' + req.uri);
+  var m = req.uri.match(/^\\/([a-z0-9-]+)(\\/app)?(\\/.*)?$/);
+  if (m && APPS.indexOf(m[1]) >= 0) {
+    if (!m[3]) return redirect(req, req.uri + '/');
+    if (m[2]) {
+      req.uri = m[3];
+      req.headers['x-site'] = { value: m[1] };
+      return req;
+    }
   }
+  if (req.uri.endsWith('/')) req.uri += 'index.html';
   return req;
 }`),
     });
     const functionAssociations = [{ function: router, eventType: cloudfront.FunctionEventType.VIEWER_REQUEST }];
 
-    // CACHING_OPTIMIZED plus the x-site header in the cache key.
-    const citibikeCache = new cloudfront.CachePolicy(this, 'CitibikeCache', {
+    // Like CACHING_OPTIMIZED, plus the x-site header in the cache key. Default TTL 0: a file with no
+    // Cache-Control isn't held here (its own CloudFront still caches it), so an app's deploys show up
+    // without invalidating this distribution. Citi Bike sets Cache-Control, so it's still cached.
+    const appCache = new cloudfront.CachePolicy(this, 'AppCache', {
       headerBehavior: cloudfront.CacheHeaderBehavior.allowList('x-site'),
+      defaultTtl: cdk.Duration.seconds(0),
       enableAcceptEncodingGzip: true,
       enableAcceptEncodingBrotli: true,
     });
+
+    // No origin request policy, so the Host header becomes the app's CloudFront domain, which it requires.
+    const additionalBehaviors: Record<string, cloudfront.BehaviorOptions> = {};
+    for (const [name, appDomain] of Object.entries(props.apps)) {
+      additionalBehaviors[`/${name}/app/*`] = {
+        origin: new origins.HttpOrigin(appDomain, { protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY }),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        compress: true,
+        cachePolicy: appCache,
+        functionAssociations,
+      };
+    }
 
     const distribution = new cloudfront.Distribution(this, 'Cdn', {
       comment: domainName,
@@ -100,19 +129,7 @@ function handler(event) {
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         functionAssociations,
       },
-      additionalBehaviors: {
-        '/citibike/app*': {
-          // No origin request policy, so the Host header becomes the Citi Bike CloudFront domain, which it requires.
-          origin: new origins.HttpOrigin(props.citibikeDomain, {
-            protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
-          }),
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          compress: true,
-          // Honors the origin's Cache-Control: 60 s for live data, 5 min for the page.
-          cachePolicy: citibikeCache,
-          functionAssociations,
-        },
-      },
+      additionalBehaviors,
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100, // North America + Europe edges: cheapest tier
     });
 

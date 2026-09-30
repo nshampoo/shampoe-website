@@ -10,5 +10,8 @@ new SiteStack(app, 'PersonalSite', {
   tags: { project: 'personal-website' },
   domainName: 'shampoe.com',
   hostedZoneId: 'Z05164909E60W3KXYNYM',
-  citibikeDomain: 'd2g10dtmnepqv0.cloudfront.net',
+  apps: {
+    citibike: 'd2g10dtmnepqv0.cloudfront.net', // Citi Bike Tides (~/Code/citibike-migration)
+    volo: 'd1wfj80t6mlo6z.cloudfront.net', // Volo Drop-in Alerts (~/Code/volo-notification-service)
+  },
 });
