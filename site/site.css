@@ -1,0 +1,28 @@
+/* Shared by every page: colors and the header nav. */
+:root {
+  --bg: #fbfaf6;
+  --ink: #16191b;
+  --muted: #858a8c;
+  --rule: #e2e0da;
+  --link: #2a78d6;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14181b; --ink: #eef1f2; --muted: #7d868a; --rule: #2b3338; --link: #7fb2f0; }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 18px/1.5 system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+header {
+  flex: none;
+  padding: 16px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 16px;
+}
+header nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 28px; }
+header a { color: var(--muted); font-weight: 500; text-decoration: none; }
+header a:hover, header a[aria-current="page"] { color: var(--ink); }

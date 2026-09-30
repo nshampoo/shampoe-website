@@ -6,44 +6,16 @@
 <title>shampoe</title>
 <meta name="description" content="Tinkering in progress.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
+<link rel="stylesheet" href="/site.css">
 <style>
-:root {
-  --bg: #fbfaf6;
-  --ink: #16191b;
-  --muted: #858a8c;
-  --rule: #e2e0da;
-  --link: #2a78d6;
-  color-scheme: light dark;
-}
-@media (prefers-color-scheme: dark) {
-  :root { --bg: #14181b; --ink: #eef1f2; --muted: #7d868a; --rule: #2b3338; --link: #7fb2f0; }
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  color: var(--ink);
-  font: 18px/1.5 system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  text-align: center;
-}
-header {
-  padding: 16px;
-  border-bottom: 1px solid var(--rule);
-  font-size: 16px;
-}
-header nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 28px; }
-header a { color: var(--muted); font-weight: 500; }
-header a:hover, header a[aria-current="page"] { color: var(--ink); text-decoration: none; }
+body { min-height: 100vh; display: flex; flex-direction: column; text-align: center; }
 main { flex: 1; display: grid; place-content: center; padding: 16px; }
 .emoji { font-size: 96px; line-height: 1; display: inline-block; animation: tinker 2.4s ease-in-out infinite; }
 @keyframes tinker { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
 @media (prefers-reduced-motion: reduce) { .emoji { animation: none; } }
 p { color: var(--muted); margin: 12px 0 32px; }
-a { color: var(--link); text-decoration: none; font-weight: 600; }
-a:hover { text-decoration: underline; }
+main a { color: var(--link); text-decoration: none; font-weight: 600; }
+main a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>

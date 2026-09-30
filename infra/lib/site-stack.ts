@@ -12,7 +12,7 @@ import { Construct } from 'constructs';
 export interface SiteStackProps extends cdk.StackProps {
   domainName: string;
   hostedZoneId: string;
-  /** The Citi Bike Tides CloudFront domain, served here under /citibike/. */
+  /** The Citi Bike Tides CloudFront domain, served here under /citibike/app/ (embedded by site/citibike/). */
   citibikeDomain: string;
 }
 
@@ -20,8 +20,10 @@ export interface SiteStackProps extends cdk.StackProps {
  * shampoe.com
  *
  *   shampoe.com, www.shampoe.com ──> CloudFront (HTTPS)
- *     ├─ /citibike/*  ──> Citi Bike Tides' own CloudFront (prefix stripped; its live data keeps updating)
- *     └─ everything else ──> site bucket (private; uploaded from site/ by `cdk deploy`)
+ *     ├─ /citibike/app/*  ──> Citi Bike Tides' own CloudFront (prefix stripped; its live data keeps updating)
+ *     └─ everything else  ──> site bucket (private; uploaded from site/ by `cdk deploy`)
+ *
+ * /citibike/ is a page in site/ that shows the header over an iframe of /citibike/app/.
  *
  * www redirects to the bare domain.
  */
@@ -51,9 +53,12 @@ export class SiteStack extends cdk.Stack {
       autoDeleteObjects: true, // everything here is rebuilt from site/
     });
 
-    // Runs on every request: www -> bare domain, /citibike -> /citibike/ (so the page's relative
-    // data/... fetches resolve under it), and /citibike/x -> /x for the Citi Bike origin.
-    // The cache key uses the rewritten path, so /citibike/ and / would share one cache entry;
+    // Runs on every request:
+    //   www -> bare domain
+    //   /citibike, /citibike/app -> add the trailing slash (so relative data/... fetches resolve under it)
+    //   /citibike/app/x -> /x for the Citi Bike origin
+    //   any other path ending in / -> its index.html in the bucket
+    // The cache key uses the rewritten path, so /citibike/app/ and / would share one cache entry;
     // the x-site header (keyed on by citibikeCache below) keeps them apart.
     const router = new cloudfront.Function(this, 'Router', {
       runtime: cloudfront.FunctionRuntime.JS_2_0,
@@ -64,10 +69,12 @@ function redirect(location) {
 function handler(event) {
   var req = event.request;
   if (req.headers.host && req.headers.host.value === '${wwwName}') return redirect('https://${domainName}' + req.uri);
-  if (req.uri === '/citibike') return redirect('/citibike/');
-  if (req.uri.startsWith('/citibike/')) {
-    req.uri = req.uri.slice('/citibike'.length);
+  if (req.uri === '/citibike' || req.uri === '/citibike/app') return redirect(req.uri + '/');
+  if (req.uri.startsWith('/citibike/app/')) {
+    req.uri = req.uri.slice('/citibike/app'.length);
     req.headers['x-site'] = { value: 'citibike' };
+  } else if (req.uri.endsWith('/')) {
+    req.uri += 'index.html';
   }
   return req;
 }`),
@@ -94,7 +101,7 @@ function handler(event) {
         functionAssociations,
       },
       additionalBehaviors: {
-        '/citibike*': {
+        '/citibike/app*': {
           // No origin request policy, so the Host header becomes the Citi Bike CloudFront domain, which it requires.
           origin: new origins.HttpOrigin(props.citibikeDomain, {
             protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
