@@ -53,6 +53,8 @@ export class SiteStack extends cdk.Stack {
 
     // Runs on every request: www -> bare domain, /citibike -> /citibike/ (so the page's relative
     // data/... fetches resolve under it), and /citibike/x -> /x for the Citi Bike origin.
+    // The cache key uses the rewritten path, so /citibike/ and / would share one cache entry;
+    // the x-site header (keyed on by citibikeCache below) keeps them apart.
     const router = new cloudfront.Function(this, 'Router', {
       runtime: cloudfront.FunctionRuntime.JS_2_0,
       code: cloudfront.FunctionCode.fromInline(`
@@ -63,11 +65,21 @@ function handler(event) {
   var req = event.request;
   if (req.headers.host && req.headers.host.value === '${wwwName}') return redirect('https://${domainName}' + req.uri);
   if (req.uri === '/citibike') return redirect('/citibike/');
-  if (req.uri.startsWith('/citibike/')) req.uri = req.uri.slice('/citibike'.length);
+  if (req.uri.startsWith('/citibike/')) {
+    req.uri = req.uri.slice('/citibike'.length);
+    req.headers['x-site'] = { value: 'citibike' };
+  }
   return req;
 }`),
     });
     const functionAssociations = [{ function: router, eventType: cloudfront.FunctionEventType.VIEWER_REQUEST }];
+
+    // CACHING_OPTIMIZED plus the x-site header in the cache key.
+    const citibikeCache = new cloudfront.CachePolicy(this, 'CitibikeCache', {
+      headerBehavior: cloudfront.CacheHeaderBehavior.allowList('x-site'),
+      enableAcceptEncodingGzip: true,
+      enableAcceptEncodingBrotli: true,
+    });
 
     const distribution = new cloudfront.Distribution(this, 'Cdn', {
       comment: domainName,
@@ -90,7 +102,7 @@ function handler(event) {
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           compress: true,
           // Honors the origin's Cache-Control: 60 s for live data, 5 min for the page.
-          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+          cachePolicy: citibikeCache,
           functionAssociations,
         },
       },
