@@ -11,24 +11,33 @@
   --bg: #fbfaf6;
   --ink: #16191b;
   --muted: #858a8c;
+  --rule: #e2e0da;
   --link: #2a78d6;
   color-scheme: light dark;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #14181b; --ink: #eef1f2; --muted: #7d868a; --link: #7fb2f0; }
+  :root { --bg: #14181b; --ink: #eef1f2; --muted: #7d868a; --rule: #2b3338; --link: #7fb2f0; }
 }
 * { box-sizing: border-box; }
 body {
   margin: 0;
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   color: var(--ink);
   font: 18px/1.5 system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   text-align: center;
 }
+header {
+  padding: 16px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 16px;
+}
+header nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 28px; }
+header a { color: var(--muted); font-weight: 500; }
+header a:hover, header a[aria-current="page"] { color: var(--ink); text-decoration: none; }
+main { flex: 1; display: grid; place-content: center; padding: 16px; }
 .emoji { font-size: 96px; line-height: 1; display: inline-block; animation: tinker 2.4s ease-in-out infinite; }
 @keyframes tinker { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
 @media (prefers-reduced-motion: reduce) { .emoji { animation: none; } }
@@ -38,6 +47,12 @@ a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
+<header>
+  <nav>
+    <a href="/" aria-current="page">Home</a>
+    <a href="/citibike/">Citi Bike Migrations</a>
+  </nav>
+</header>
 <main>
   <div class="emoji" aria-hidden="true">🛠️</div>
   <p>tinkering…</p>
