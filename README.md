@@ -18,3 +18,8 @@ AWS_PROFILE=personal npx cdk deploy
 ```
 
 Edit `site/` and re-run the deploy to publish changes.
+
+## TODO
+
+- [ ] Add Tomo
+- [ ] Add the Citi Bike Parking app (`~/Code/citibike-parking`). It's an iOS app, not a web page on CloudFront, so it probably gets its own page in `site/` rather than an entry in `infra/bin/infra.ts`.
