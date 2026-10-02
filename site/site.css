@@ -1,28 +1,141 @@
-/* Shared by every page: colors and the header nav. */
+/* Shared by every page: theme tokens, type, header, footer, and the pieces pages reuse.
+   Light by default; dark follows the visitor's system unless they pick one with the toggle
+   (site.js sets data-theme on <html>). */
 :root {
-  --bg: #fbfaf6;
-  --ink: #16191b;
-  --muted: #858a8c;
-  --rule: #e2e0da;
-  --link: #2a78d6;
-  color-scheme: light dark;
+  --bg: #eceff3;
+  --surface: #ffffff;
+  --surface-2: #f6f8fa;
+  --ink: #15191e;
+  --ink-2: #3f4852;
+  --muted: #59626d;
+  --faint: #8a929c;
+  --rule: #dfe3e8;
+  --rule-soft: #eef1f4;
+  --link: #1d5fb8;
+  --link-hover: #123f7a;
+  --accent: #2a6fd0;
+  --tinker: #f08a24;
+  --live: #1a7a43;
+  --progress: #a15c07;
+  --shadow: 0 1px 2px rgba(21, 25, 30, 0.06);
+  --penguin-outline: transparent;
+
+  /* One color family per tool: tag background, tag text, image panel behind screenshots. */
+  --tides-tag: #e3edfb; --tides-ink: #1f5cb3; --tides-panel: #e4eaee;
+  --tomo-tag: #fbe8d6;  --tomo-ink: #a14f0c;  --tomo-panel: #f6e3d0;
+  --volo-tag: #ebe7fb;  --volo-ink: #4a37a8;  --volo-panel: #e9e6f7;
+  --park-tag: #ddf1e5;  --park-ink: #15663a;  --park-panel: #dcefe3;
+
+  --font: Geist, "Helvetica Neue", Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --gutter: 120px;
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #14181b; --ink: #eef1f2; --muted: #7d868a; --rule: #2b3338; --link: #7fb2f0; }
+  :root:not([data-theme="light"]) {
+    --bg: #0f1215; --surface: #181c21; --surface-2: #1f242a;
+    --ink: #eef1f4; --ink-2: #c3cad2; --muted: #9aa3ad; --faint: #737c86;
+    --rule: #2a3038; --rule-soft: #232930;
+    --link: #7fb2f0; --link-hover: #a9cbf6; --accent: #6ea8f5;
+    --tinker: #f5a24f; --live: #4cc38a; --progress: #e0a24a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4); --penguin-outline: #eef1f4;
+    --tides-tag: #1a2a40; --tides-ink: #8ab8f2; --tides-panel: #1d2733;
+    --tomo-tag: #3a2614;  --tomo-ink: #f0b27a;  --tomo-panel: #33261a;
+    --volo-tag: #2a2448;  --volo-ink: #b3a6f5;  --volo-panel: #262238;
+    --park-tag: #173326;  --park-ink: #84d3a5;  --park-panel: #1a2e24;
+    color-scheme: dark;
+  }
 }
+:root[data-theme="dark"] {
+  --bg: #0f1215; --surface: #181c21; --surface-2: #1f242a;
+  --ink: #eef1f4; --ink-2: #c3cad2; --muted: #9aa3ad; --faint: #737c86;
+  --rule: #2a3038; --rule-soft: #232930;
+  --link: #7fb2f0; --link-hover: #a9cbf6; --accent: #6ea8f5;
+  --tinker: #f5a24f; --live: #4cc38a; --progress: #e0a24a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4); --penguin-outline: #eef1f4;
+  --tides-tag: #1a2a40; --tides-ink: #8ab8f2; --tides-panel: #1d2733;
+  --tomo-tag: #3a2614;  --tomo-ink: #f0b27a;  --tomo-panel: #33261a;
+  --volo-tag: #2a2448;  --volo-ink: #b3a6f5;  --volo-panel: #262238;
+  --park-tag: #173326;  --park-ink: #84d3a5;  --park-panel: #1a2e24;
+  color-scheme: dark;
+}
+@media (max-width: 900px) { :root { --gutter: 24px; } }
+@media (max-width: 480px) { :root { --gutter: 16px; } }
+
 * { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   color: var(--ink);
-  font: 18px/1.5 system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font: 16px/1.6 var(--font);
 }
-header {
-  flex: none;
-  padding: 16px;
-  border-bottom: 1px solid var(--rule);
-  font-size: 16px;
+img { max-width: 100%; display: block; }
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--link-hover); }
+h1, h2, h3 { text-wrap: balance; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.mono { font-family: var(--mono); }
+.wrap { width: 100%; max-width: calc(1040px + 2 * var(--gutter)); margin: 0 auto; padding-inline: var(--gutter); }
+
+/* Header */
+.site-header { background: var(--surface); border-bottom: 1px solid var(--rule); }
+.site-header .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 16px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 600; font-size: 17px; }
+.brand:hover { color: var(--ink); }
+.brand svg .body { fill: #15191e; stroke: var(--penguin-outline); stroke-width: 1.2; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.site-nav { display: flex; gap: 4px; font-size: 15px; }
+.site-nav a { padding: 8px 12px; border-radius: 8px; color: var(--muted); }
+.site-nav a:hover { color: var(--ink); background: var(--rule-soft); }
+.site-nav a[aria-current="page"] { color: var(--ink); background: var(--bg); font-weight: 500; }
+.theme-toggle {
+  width: 38px; height: 38px; flex: none; border-radius: 10px; border: 1px solid var(--rule);
+  background: var(--surface); color: var(--ink-2); display: grid; place-items: center; cursor: pointer;
 }
-header nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 28px; }
-header a { color: var(--muted); font-weight: 500; text-decoration: none; }
-header a:hover, header a[aria-current="page"] { color: var(--ink); }
+.theme-toggle:hover { color: var(--ink); background: var(--rule-soft); }
+.theme-toggle .sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .sun { display: block; }
+  :root:not([data-theme="light"]) .theme-toggle .moon { display: none; }
+}
+@media (max-width: 560px) {
+  .brand span { display: none; }
+  .site-nav a { padding: 8px 9px; }
+}
+
+/* Footer */
+.site-footer { margin-top: auto; background: var(--surface); border-top: 1px solid var(--rule); font-size: 14px; color: var(--muted); }
+.site-footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px 24px; padding-block: 28px; }
+.site-footer nav { display: flex; gap: 20px; font-weight: 500; }
+
+/* Shared pieces */
+.eyebrow { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.tag { display: inline-block; padding: 3px 9px; border-radius: 6px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.status.live { color: var(--live); }
+.status.progress { color: var(--progress); }
+.status.muted { color: var(--muted); }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--surface); font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+.card { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); }
+.button { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 10px; font-size: 15px; font-weight: 500; background: var(--surface); color: var(--ink); border: 0; cursor: pointer; }
+.button:hover { color: var(--ink); background: var(--rule-soft); }
+.button.primary { background: var(--ink); color: var(--bg); }
+.button.primary:hover { color: var(--bg); opacity: 0.88; }
+.specs { margin: 0; display: grid; grid-template-columns: 70px minmax(0, 1fr); row-gap: 6px; font-family: var(--mono); font-size: 12.5px; }
+.specs dt { color: var(--faint); }
+.specs dd { margin: 0; color: var(--ink-2); }
+
+.tool-tides { --tag: var(--tides-tag); --tag-ink: var(--tides-ink); --panel: var(--tides-panel); }
+.tool-tomo { --tag: var(--tomo-tag); --tag-ink: var(--tomo-ink); --panel: var(--tomo-panel); }
+.tool-volo { --tag: var(--volo-tag); --tag-ink: var(--volo-ink); --panel: var(--volo-panel); }
+.tool-park { --tag: var(--park-tag); --tag-ink: var(--park-ink); --panel: var(--park-panel); }
+.tag.tool { background: var(--tag); color: var(--tag-ink); }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

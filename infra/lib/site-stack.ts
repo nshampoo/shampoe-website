@@ -62,6 +62,7 @@ export class SiteStack extends cdk.Stack {
     //   /<app>, /<app>/app -> add the trailing slash (so the app's relative fetches resolve under it)
     //   /<app>/app/x -> /x for that app's origin
     //   any other path ending in / -> its index.html in the bucket
+    //   a path with no file extension (/about) -> add the trailing slash
     // Redirects keep the query string, so invite links like /volo/?invite=... survive.
     // The cache key uses the rewritten path, so /citibike/app/ and / would share one cache entry;
     // the x-site header (keyed on by appCache below) keeps them apart.
@@ -89,7 +90,12 @@ function handler(event) {
       return req;
     }
   }
-  if (req.uri.endsWith('/')) req.uri += 'index.html';
+  if (req.uri.endsWith('/')) {
+    req.uri += 'index.html';
+    return req;
+  }
+  var last = req.uri.slice(req.uri.lastIndexOf('/') + 1);
+  if (last.indexOf('.') === -1) return redirect(req, req.uri + '/');
   return req;
 }`),
     });
@@ -130,6 +136,13 @@ function handler(event) {
         functionAssociations,
       },
       additionalBehaviors,
+      // Missing files come back from S3 as 403; show the site's own 404 page for both.
+      errorResponses: [403, 404].map((httpStatus) => ({
+        httpStatus,
+        responseHttpStatus: 404,
+        responsePagePath: '/404.html',
+        ttl: cdk.Duration.minutes(1),
+      })),
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100, // North America + Europe edges: cheapest tier
     });
 
