@@ -22,4 +22,6 @@ Edit `site/` and re-run the deploy to publish changes.
 ## TODO
 
 - [ ] Add Tomo
+- [ ] Volo: count every new drop-in the poller finds (all-time, per month, per sport) so the Live page can show "drop-ins spotted"
+- [ ] Backburner: Spotify "now playing" on the Live page (needs a Spotify developer app)
 - [ ] Add the Citi Bike Parking app (`~/Code/citibike-parking`). It's an iOS app, not a web page on CloudFront, so it probably gets its own page in `site/` rather than an entry in `infra/bin/infra.ts`.
