@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Park It: how and why · Nick Shampoe</title>
+<meta name="description" content="Park It, an iPhone app and widgets for finding open Citi Bike docks without fiddling with your phone mid-ride.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/story.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- /header -->
+<main class="wrap story tool-park">
+  <header class="narrow story-head">
+    <a class="back" href="/">← Back to the workshop</a>
+    <span class="tag tool">How and why I'm building it</span>
+    <h1>Park It</h1>
+    <p class="lede">Open Citi Bike docks at a glance, right on your Lock Screen.</p>
+    <div class="chips"><span class="progress"><span class="dot"></span>In progress</span><span>SwiftUI · WidgetKit · App Intents</span><span>iPhone</span></div>
+  </header>
+
+  <figure class="card wide hero-shot panel" style="margin: 0">
+    <img src="/img/park-lock.jpg" alt="iPhone Lock Screen with Park It widgets showing open docks at three nearby stations" width="507" height="1100">
+    <img src="/img/parking.jpg" alt="Park It map with open dock counts at each station and a list of the nearest ones" width="598" height="1300">
+    <figcaption><span>Lock Screen widgets (left) and the app's map (right).</span><span>Coming to the App Store</span></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <h2>The itch</h2>
+    <p>I wanted a safer way to check for parking on my phone, without pulling it out mid-ride and fiddling with the Citi Bike app. Now when I'm rolling up home, I can check my favorite or nearby stations with a glance.</p>
+
+    <h2>What it does</h2>
+    <ul>
+      <li><strong>A map of open docks</strong> (or available bikes) near you, with the closest stations listed underneath. Flip between <strong>Park</strong> and <strong>Ride</strong> with one tap.</li>
+      <li><strong>Saved places</strong> like Home and Work: tap one to see the stations there.</li>
+      <li><strong>Widgets</strong> for the Home Screen and Lock Screen: closest to me, my favorites, near a destination, or <strong>Commute</strong>, which shows Work in the morning and Home the rest of the day.</li>
+      <li><strong>Siri and Shortcuts:</strong> "How many docks at <em>station</em> in Park It."</li>
+    </ul>
+
+    <h2>How it works</h2>
+    <p>Citi Bike publishes live station data in an open format (GBFS) that needs no API key. A small shared Swift package fetches and models it, and the app and widgets share a cache through an App Group, so widgets stay fresh without opening the app.</p>
+  </article>
+
+  <figure class="card wide flow" style="margin: 0">
+    <ol>
+          <li class="step"><b>Citi Bike feed</b><span>public GBFS, no key</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>BikeKit</b><span>shared Swift package</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>App Group</b><span>shared station cache</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>App + widgets</b><span>map, Lock Screen, Home</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Siri</b><span>“How many docks at…”</span></li>
+    </ol>
+    <figcaption><span>Larger widgets have a refresh button that works right from the Home Screen.</span></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <h2>What's next</h2>
+    <p>Polishing it up and shipping it to the App Store.</p>
+  </article>
+</main>
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
+</body>
+</html>
