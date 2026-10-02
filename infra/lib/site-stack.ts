@@ -2,6 +2,11 @@ import * as path from 'path';
 import * as cdk from 'aws-cdk-lib/core';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as r53targets from 'aws-cdk-lib/aws-route53-targets';
@@ -150,9 +155,46 @@ function handler(event) {
       sources: [s3deploy.Source.asset(path.join(__dirname, '../../site'))],
       destinationBucket: site,
       cacheControl: [s3deploy.CacheControl.fromString('public, max-age=300')],
+      // live.json is written by the live feed Lambda, not by deploys; excluding it also
+      // keeps the deploy's cleanup step from deleting it.
+      exclude: ['live.json'],
       distribution,
       distributionPaths: ['/*'],
     });
+
+    // The Live page's data: every 15 minutes, gather GitHub, Goodreads, Citi Bike, Volo,
+    // and Strava into /live.json. Each source is optional, so one failing never blanks the page.
+    const liveFeed = new lambda.Function(this, 'LiveFeed', {
+      runtime: lambda.Runtime.PYTHON_3_13,
+      architecture: lambda.Architecture.ARM_64,
+      handler: 'handler.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../live-feed'), { exclude: ['__pycache__'] }),
+      memorySize: 512, // Citi Bike's hourly files add up to a few MB of JSON by evening
+      timeout: cdk.Duration.minutes(1),
+      environment: { BUCKET: site.bucketName },
+      logGroup: new logs.LogGroup(this, 'LiveFeedLogs', {
+        retention: logs.RetentionDays.ONE_MONTH,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      }),
+    });
+    site.grantPut(liveFeed, 'live.json');
+    const param = (name: string) => cdk.Stack.of(this).formatArn({ service: 'ssm', resource: 'parameter', resourceName: name });
+    liveFeed.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ssm:GetParameter'],
+      resources: [param('volo-notifier/stats-table'), param('shampoe-site/strava')],
+    }));
+    // Strava may rotate the refresh token, so the feed saves the new one back.
+    liveFeed.addToRolePolicy(new iam.PolicyStatement({ actions: ['ssm:PutParameter'], resources: [param('shampoe-site/strava')] }));
+    liveFeed.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:Scan'],
+      resources: [cdk.Stack.of(this).formatArn({ service: 'dynamodb', resource: 'table', resourceName: 'VoloPoller-DropinStats*' })],
+    }));
+    new events.Rule(this, 'LiveFeedSchedule', {
+      description: 'Refresh shampoe.com/live.json',
+      schedule: events.Schedule.rate(cdk.Duration.minutes(15)),
+      targets: [new targets.LambdaFunction(liveFeed, { retryAttempts: 0 })],
+    });
+    new cdk.CfnOutput(this, 'LiveFeedName', { value: liveFeed.functionName });
 
     const target = route53.RecordTarget.fromAlias(new r53targets.CloudFrontTarget(distribution));
     for (const [id, recordName] of [['Apex', domainName], ['Www', wwwName]]) {
