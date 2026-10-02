@@ -1,13 +1,31 @@
 # shampoe.com
 
-Personal site. A static page in `site/`, hosted on AWS with CDK in `infra/`.
+Personal site: a workshop of the tools I've built, a live "dashboard of randomness", and an About page. Static HTML in `site/`, hosted on AWS with CDK in `infra/`.
 
-- `shampoe.com` serves `site/` from a private S3 bucket through CloudFront.
-- Apps hosted on their own CloudFront (listed in `infra/bin/infra.ts`) appear under the site header:
-  - `shampoe.com/<app>/` is a page in `site/<app>/` with the header over an iframe of `/<app>/app/`.
-  - `shampoe.com/<app>/app/` passes through to that app's CloudFront, so its deploys show up here live.
-  - Current apps: `citibike` (Citi Bike Tides) and `volo` (Volo Drop-in Alerts; password is its invite code).
-- `www.shampoe.com` redirects to `shampoe.com`.
+## Layout
+
+| Path | What |
+| --- | --- |
+| `site/index.html` | Workshop (homepage): intro, live strip, tool cards |
+| `site/<tool>/` | How-and-why page per tool (`citibike`, `tomo`, `volo`, `park-it`), using `story.css` |
+| `site/citibike/open/`, `site/volo/open/` | The tool itself under the site header (iframe of `/<tool>/app/`) |
+| `site/live/` | Live page; `live.js` renders `/live.json` there and on the homepage |
+| `site/about/` | About page (photos in `site/img/about/`) |
+| `partials/` | Shared header and footer; copy into every page with `node scripts/sync-chrome.mjs` |
+| `live-feed/handler.py` | Lambda that writes `/live.json` every 15 minutes |
+| `infra/` | CDK stack: S3, CloudFront (+ router function), ACM, Route 53, live feed |
+
+## How requests are routed
+
+- `shampoe.com` serves `site/` from a private S3 bucket through CloudFront; `www` redirects to it.
+- `/<app>/app/*` passes through to that app's own CloudFront (listed in `infra/bin/infra.ts`), so its deploys show up here live.
+- Paths without a trailing slash get one (`/about` -> `/about/`), and missing pages show `404.html`.
+
+## Live data
+
+`live-feed/handler.py` gathers GitHub pushes, Goodreads books, Citi Bike Tides stats, Volo daily drop-in counts (DynamoDB table named in SSM at `/volo-notifier/stats-table`), and Strava. Each source is optional.
+
+Strava needs credentials in SSM at `/shampoe-site/strava` (SecureString JSON with `client_id`, `client_secret`, `refresh_token`). Run maps drop the first and last 400 m; only slow "Flag Football" activities count as games.
 
 ## Deploy
 
@@ -17,11 +35,13 @@ npm install
 AWS_PROFILE=personal npx cdk deploy
 ```
 
-Edit `site/` and re-run the deploy to publish changes.
+After editing `partials/`, run `node scripts/sync-chrome.mjs` before deploying.
 
 ## TODO
 
-- [ ] Add Tomo
-- [ ] Volo: the poller adds each new drop-in to a per-day record in DynamoDB (total + flag football), and the Live page charts both per day, starting the day it ships
+- [x] Add Tomo
+- [x] Volo: per-day drop-in counts (total + flag football) charted on the Live page
+- [ ] Connect Strava (API app + credentials in SSM) so the run, game, and monthly tiles appear
+- [ ] Add resume PDF at `site/resume.pdf`
 - [ ] Backburner: Spotify "now playing" on the Live page (needs a Spotify developer app)
-- [ ] Add the Citi Bike Parking app (`~/Code/citibike-parking`). It's an iOS app, not a web page on CloudFront, so it probably gets its own page in `site/` rather than an entry in `infra/bin/infra.ts`.
+- [x] Add the Citi Bike Parking app (Park It) as its own page
