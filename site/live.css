@@ -1,0 +1,34 @@
+/* Live tiles: the Live page grid and the homepage strip share these. */
+:root {
+  --run: #e8590c; --run-panel: #fff1e6;
+  --field: #4f9a4a;
+  --ride: #2a6fd0; --swim: #0e8a8a;
+  /* Drop-in chart: validated categorical pair (CVD-safe, both themes). */
+  --chart-football: #4a3aa7; --chart-other: #1baf7a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --run: #f08a4b; --run-panel: #2e2117; --field: #3d7a39; --ride: #6ea8f5; --swim: #3fb5b5; --chart-football: #9085e9; --chart-other: #199e70; }
+}
+:root[data-theme="dark"] { --run: #f08a4b; --run-panel: #2e2117; --field: #3d7a39; --ride: #6ea8f5; --swim: #3fb5b5; --chart-football: #9085e9; --chart-other: #199e70; }
+
+.tile { background: var(--surface); border-radius: 16px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.tile .label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+.tile .source { margin-top: auto; font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+.tile h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.tile p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--ink-2); }
+.big { font-size: 44px; line-height: 1.05; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.label.run { color: var(--run); } .label.game { color: var(--chart-football); } .label.cb { color: var(--tides-ink); }
+.label.books { color: var(--park-ink); } .label.repos { color: var(--tinker); } .label.volo { color: var(--volo-ink); }
+
+svg .route { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.run-map { background: var(--run-panel); }
+.run-map .route { stroke: var(--run); stroke-width: 4; }
+.run-map .route-start { fill: var(--run); }
+.run-map .route-end { fill: var(--surface); stroke: var(--run); stroke-width: 3; }
+.game-map { background: var(--field); }
+.game-map .route { stroke: #ffffff; stroke-width: 1.6; opacity: 0.9; }
+
+.book { display: flex; gap: 14px; align-items: flex-start; }
+.book img { width: 66px; height: 98px; object-fit: cover; border-radius: 4px; flex: none; box-shadow: var(--shadow); }
+.book .t { font-size: 18px; font-weight: 600; line-height: 1.3; }
+.book .by { font-size: 14px; color: var(--muted); }
