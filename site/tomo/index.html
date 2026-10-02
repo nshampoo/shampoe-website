@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tomo: how and why · Nick Shampoe</title>
+<meta name="description" content="Tomo, an app for finding runners who match your pace: why my college teammates and I built it, and how it works.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/story.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- /header -->
+<main class="wrap story tool-tomo">
+  <header class="narrow story-head">
+    <a class="back" href="/">← Back to the workshop</a>
+    <span class="tag tool">How and why we built it</span>
+    <h1>Tomo</h1>
+    <p class="lede">Land in a new town and have someone to run with by the weekend.</p>
+    <div class="chips"><span class="live"><span class="dot"></span>On the App Store</span><span>React Native · Expo · Firebase</span><span>Built with friends</span></div>
+    <div class="ctas"><a class="button primary" href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">Get Tomo on the App Store →</a></div>
+  </header>
+
+  <figure class="card wide hero-shot panel" style="margin: 0">
+    <img src="/img/tomo.jpg" alt="A Tomo runner profile: photo, short bio, city, pace, and preferred distance" width="829" height="900">
+    <img src="/img/tomo-chat.jpg" alt="Tomo matches list and a chat planning a Saturday morning run" width="1100" height="548" style="align-self: center; border-radius: 14px; max-height: 300px">
+    <figcaption><span>Profiles show pace and distance up front. Match, chat, and plan the run.</span><a href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">See it on the App Store →</a></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <h2>The itch</h2>
+    <p>My college teammates at ASU and I are runners at heart. For years we dreamed of a world where you could make new friends through running: visit a new town and immediately have someone to run and explore with. So we built it.</p>
+
+    <h2>What it does</h2>
+    <ul>
+      <li><strong>Profiles built for runners:</strong> photos, a short bio, your usual pace range, and how far you like to go.</li>
+      <li><strong>Matching</strong> on pace, distance from you, and your preferences, with a swipe deck to say yes or pass.</li>
+      <li><strong>Chat</strong> with your matches to plan the run.</li>
+      <li><strong>Run meetups:</strong> post a run with a time, place, distance, and pace, and your matches can join.</li>
+      <li><strong>Push notifications</strong> for new matches, friend requests, and meetups.</li>
+    </ul>
+
+    <h2>How it works</h2>
+    <p>One React Native codebase built with Expo, backed by Firebase. The app talks to Firebase directly for sign-in and data, and Cloud Functions react to changes, like sending a push when you get a new match.</p>
+  </article>
+
+  <figure class="card wide flow" style="margin: 0">
+    <ol>
+          <li class="step key"><b>Tomo app</b><span>React Native · Expo</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Firebase</b><span>Auth · Firestore · Storage</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>Cloud Functions</b><span>matches, meetups, photos</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Expo push</b><span>notifications</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Your phone</b><span>“New match!”</span></li>
+    </ol>
+    <figcaption><span>Cloud Functions also check uploaded photos and make thumbnails, so profiles load fast.</span></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <h2>What's next</h2>
+    <p>Getting more runners on it, city by city. An app like this is only as good as the people near you, so if you run, download it and say hi.</p>
+  </article>
+
+  <section class="wide try">
+    <div><h2>Find your running buddy</h2><p>On the App Store for iPhone.</p></div>
+    <a class="button" href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">Get Tomo →</a>
+  </section>
+</main>
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
+</body>
+</html>
