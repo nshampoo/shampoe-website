@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>This site: how and why · Nick Shampoe</title>
+<meta name="description" content="How shampoe.com works: one domain for separately deployed projects, and a Live page that refreshes itself.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/story.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- /header -->
+<main class="wrap story tool-site">
+  <header class="narrow story-head">
+    <a class="back" href="/">← Back to the workshop</a>
+    <span class="tag tool">How and why I built it</span>
+    <h1>This site</h1>
+    <p class="lede">One home for everything I build, stitched together at the edge and refreshed by itself every 15 minutes.</p>
+    <div class="chips"><span class="live"><span class="dot"></span>You're on it</span><span>CloudFront · S3 · Lambda · DynamoDB · CDK</span><span>About $1–2 a month</span></div>
+    <div class="ctas"><a class="button primary" href="/live/">See the Live page →</a></div>
+  </header>
+
+  <figure class="card wide hero-shot" style="margin: 0">
+    <img src="/img/this-site.jpg" alt="The Live page: latest run, latest flag football game, the last 30 days in activities, Citi Bike numbers, and GitHub activity" width="1280" height="1000">
+    <figcaption><span>The Live page. Every number on it updates itself.</span><a href="/live/">Open it →</a></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <h2>The itch</h2>
+    <p>Every tool I built lived at its own random CloudFront address that nobody could remember. I wanted one place for all of it: somewhere I could send a friend or a recruiter, that also shows what I've been up to without me having to keep it updated.</p>
+
+    <h2>What it does</h2>
+    <ul>
+      <li><strong>The workshop:</strong> every project with the story behind it, and a way to open the real thing.</li>
+      <li><strong>Other projects, one domain:</strong> Citi Bike Tides and Volo Drop-in Alerts are deployed from their own repos, but show up here under my header, always on their latest version.</li>
+      <li><strong>The Live page:</strong> my latest run, my latest flag football game, Citi Bike right now, what I'm reading, what I'm coding, and how many Volo drop-ins my alert has caught.</li>
+      <li><strong>Light and dark mode</strong> that follows your system, with a toggle that remembers your choice.</li>
+    </ul>
+
+    <h2>How a page gets to you</h2>
+    <p>The pages are plain HTML files in a private S3 bucket. CloudFront serves them over HTTPS from edge locations close to you, and a tiny function runs on every request before anything is fetched.</p>
+  </article>
+
+  <figure class="card wide flow" style="margin: 0">
+    <ol>
+          <li class="step"><b>You</b><span>shampoe.com</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Route 53</b><span>DNS</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>CloudFront</b><span>HTTPS · edge cache</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>Router function</b><span>runs on every request</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Page or app</b><span>S3 · Citi Bike · Volo</span></li>
+    </ol>
+    <figcaption><span>The router adds missing slashes, redirects www, and sends /citibike/app/ and /volo/app/ to those projects' own CloudFront sites.</span></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <p><strong>Stitching projects together.</strong> When you open /citibike/app/, the router strips the prefix and forwards the request to Citi Bike Tides' own CloudFront distribution. The map loads its data with relative paths, so it works here without any changes, and every deploy of that project shows up here immediately.</p>
+    <p><strong>A caching bug worth knowing about.</strong> CloudFront caches by the path after the router rewrites it, so /citibike/app/ and my own homepage both looked like "/" and briefly served each other. The router now tags each app's requests with a header that's part of the cache key, so they're stored separately.</p>
+
+    <h2>How the Live page stays fresh</h2>
+    <p>A small Python Lambda runs every 15 minutes, gathers the latest from each source, and writes a single live.json file. The page reads that file and fills in the tiles. If one source is down, its tile simply stays hidden.</p>
+  </article>
+
+  <figure class="card wide flow" style="margin: 0">
+    <ol>
+          <li class="step"><b>Every 15 minutes</b><span>EventBridge schedule</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>Live feed Lambda</b><span>Python</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Five sources</b><span>GitHub · Goodreads · Citi Bike · Volo · Strava</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>live.json</b><span>S3</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Your browser</b><span>live.js fills the tiles</span></li>
+    </ol>
+    <figcaption><span>Volo's poller adds each new drop-in to a daily count in DynamoDB, and the Lambda reads it from there.</span></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <p><strong>Privacy on the maps.</strong> Run maps drop everything within 400 meters of the start and finish, so they never show where I live. Flag football games are drawn in full, since the whole game happens on one field. Only slow, on-the-field activities count as games, which keeps a ride home I once mislabeled "Flag Football" off the map.</p>
+    <p><strong>Secrets stay in AWS.</strong> Strava credentials live encrypted in SSM Parameter Store, and the Lambda saves Strava's rotating refresh token back there on its own.</p>
+
+    <h2>Built with</h2>
+    <p>Everything, from the certificate and DNS to the schedule and permissions, is defined in AWS CDK, so the whole site can be rebuilt from the repo with one command. It costs about a dollar or two a month, mostly the domain's DNS.</p>
+
+    <h2>What's next</h2>
+    <p>A "now playing" tile from Spotify on the Live page, and more tools on the workbench.</p>
+  </article>
+
+  <section class="wide try">
+    <div><h2>See it in action</h2><p>The Live page updated a few minutes ago.</p></div>
+    <a class="button" href="/live/">Open the Live page →</a>
+  </section>
+</main>
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
+</body>
+</html>
