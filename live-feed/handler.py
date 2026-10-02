@@ -211,8 +211,10 @@ def _strava_token():
 
 def strava(now):
     token = _strava_token()
-    month_start = now.astimezone(NEW_YORK).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    after = int((month_start - timedelta(days=45)).timestamp())
+    # The tiles cover the last 30 days (a calendar month would read all zeros on the 1st);
+    # fetch further back so the latest run and game are found even after a quiet month.
+    window_start = now - timedelta(days=30)
+    after = int((now - timedelta(days=90)).timestamp())
     acts = get_json(f"https://www.strava.com/api/v3/athlete/activities?per_page=200&after={after}",
                     headers={"Authorization": f"Bearer {token}"})
     acts.sort(key=lambda a: a["start_date"], reverse=True)
@@ -223,7 +225,8 @@ def strava(now):
             "date": a["start_date_local"][:10],
             "miles": round(a["distance"] / 1609.344, 2),
             "moving_seconds": a["moving_time"],
-            "calories": round(a.get("calories") or a.get("kilojoules") or 0),
+            # The activity list only sometimes includes calories; kilojoules are not calories.
+            "calories": round(a.get("calories") or 0),
             "max_mph": round((a.get("max_speed") or 0) * 2.23694, 1),
         }
         if a["distance"] and a["type"] == "Run":
@@ -239,9 +242,9 @@ def strava(now):
     games = [a for a in acts if a["name"].strip().lower() == "flag football"]
     game = next((a for a in games if (a.get("average_speed") or 99) < GAME_MAX_AVG_SPEED), None)
 
-    this_month = [a for a in acts if a["start_date_local"][:7] == month_start.strftime("%Y-%m")]
+    recent = [a for a in acts if datetime.fromisoformat(a["start_date"].replace("Z", "+00:00")) >= window_start]
     counts = {"rides": 0, "flag_football": 0, "runs": 0, "swims": 0}
-    for a in this_month:
+    for a in recent:
         if a["name"].strip().lower() == "flag football" and (a.get("average_speed") or 99) < GAME_MAX_AVG_SPEED:
             counts["flag_football"] += 1
         elif a["type"] in ("Ride", "EBikeRide") or a.get("sport_type") in ("EBikeRide", "Ride"):
@@ -251,14 +254,20 @@ def strava(now):
         elif a["type"] == "Swim":
             counts["swims"] += 1
 
-    # Activity title of the month: the custom-named one with the most kudos.
-    named = [a for a in this_month if not DEFAULT_NAME.match(a["name"]) and a["name"].strip().lower() != "flag football"]
-    best = max(named, key=lambda a: a.get("kudos_count", 0), default=None)
+    # Activity title of the month: a custom, one-off title from the last 30 days. Names that
+    # repeat (a run club's acronym, "Flag Football") are labels, not jokes, so they're skipped;
+    # among the rest the wordiest wins, then the one with the most kudos.
+    name_counts = {}
+    for a in acts:
+        key = a["name"].strip().lower()
+        name_counts[key] = name_counts.get(key, 0) + 1
+    named = [a for a in recent if not DEFAULT_NAME.match(a["name"]) and name_counts[a["name"].strip().lower()] == 1]
+    best = max(named, key=lambda a: (len(a["name"].split()), a.get("kudos_count", 0)), default=None)
 
     return {
         "latest_run": summary(run, "trimmed") if run else None,
         "latest_game": summary(game, "field") if game else None,
-        "month": {"label": month_start.strftime("%B"), **counts},
+        "month": {"label": "Last 30 days", **counts},
         "title_of_the_month": {"name": best["name"], "date": best["start_date_local"][:10], "type": best.get("sport_type") or best["type"]} if best else None,
     }
 

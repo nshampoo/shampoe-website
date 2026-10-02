@@ -154,7 +154,7 @@
   function renderMonth(feed) {
     var m = feed.strava && feed.strava.month;
     if (!m || !$("tile-month")) return;
-    set("month-label", m.label + ", by the numbers");
+    set("month-label", m.label + ", by the numbers");  // e.g. "Last 30 days, by the numbers"
     var rows = [["E-bike rides", m.rides, "ride"], ["Flag football", m.flag_football, "football"], ["Runs", m.runs, "run"], ["Swims", m.swims, "swim"]];
     var max = Math.max.apply(null, rows.map(function (r) { return r[1]; })) || 1;
     var box = $("month-bars");
