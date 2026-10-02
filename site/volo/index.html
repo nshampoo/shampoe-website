@@ -3,28 +3,106 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Volo Alerts · shampoe</title>
-<meta name="description" content="Get an email when a new Volo drop-in spot opens in NYC.">
+<title>Volo Drop-in Alerts: how and why · Nick Shampoe</title>
+<meta name="description" content="Why I built an alert for new Volo drop-in games, and how it works.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/site.css">
-<style>
-/* Header on top, the Volo sign-up page (served live under /volo/app/) fills the rest of the screen. */
-body { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-iframe { flex: 1; width: 100%; border: 0; display: block; }
-</style>
+<link rel="stylesheet" href="/story.css">
+<script>
+// Old invite links pointed at /volo/?invite=...; send them straight to the sign-up.
+if (new URLSearchParams(location.search).has("invite")) location.replace("/volo/open/" + location.search);
+</script>
+<script src="/site.js"></script>
 </head>
 <body>
-<header>
-  <nav>
-    <a href="/">Home</a>
-    <a href="/citibike/">Citi Bike Migrations</a>
-    <a href="/volo/" aria-current="page">Volo Alerts</a>
-  </nav>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
 </header>
-<iframe id="app" title="Volo Drop-in Alerts"></iframe>
-<script>
-// Pass ?invite=... through, so an invite link to shampoe.com/volo/ skips the password box.
-document.getElementById("app").src = "/volo/app/" + location.search;
-</script>
+<!-- /header -->
+<main class="wrap story tool-volo">
+  <header class="narrow story-head">
+    <a class="back" href="/">← Back to the workshop</a>
+    <span class="tag tool">How and why I built it</span>
+    <h1>Volo Drop-in Alerts</h1>
+    <p class="lede">An email the moment a new pickup game opens up, before the spots fill.</p>
+    <div class="chips"><span>Friends only (password)</span><span>Python · AWS Lambda · DynamoDB · SNS · CDK</span><span>Checks hourly</span></div>
+    <div class="ctas"><a class="button primary" href="/volo/open/">Got the password? Sign up →</a></div>
+  </header>
+
+  <article class="narrow prose">
+    <h2>The itch</h2>
+    <p>I've been playing a lot of flag football through Volo, and drop-ins (single pickup games you can jump into) fill up fast. There was no way to get notified when a new one opened, so I kept finding out too late. I want to play as much as possible, so I built the alert.</p>
+    <p>Yes, it's password protected. The whole advantage of getting the alert is that everyone else doesn't. 😈</p>
+
+    <h2>What it does</h2>
+    <ul>
+      <li>Once an hour it checks Volo for new drop-ins in New York, across 11 sports.</li>
+      <li>Every new game goes out by email to the people who picked that sport, exactly once.</li>
+      <li>Signing up takes an email and the sports you care about. AWS sends a confirmation link first, and every alert has an unsubscribe link.</li>
+    </ul>
+
+    <h2>How it works</h2>
+    <p>A scheduled function asks Volo for the current drop-ins, skips the ones it has already announced, and publishes the rest. Email delivery and per-sport filtering are handled by AWS SNS, so there's no mailing list for me to manage.</p>
+  </article>
+
+  <figure class="card wide flow" style="margin: 0">
+    <ol>
+          <li class="step"><b>Volo</b><span>drop-in listings</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>Poller Lambda</b><span>every hour</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Already seen?</b><span>DynamoDB</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>SNS topic</b><span>filtered by sport</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Your inbox</b><span>one email per game</span></li>
+    </ol>
+    <figcaption><span>The alert path. The sign-up page adds you to the SNS topic with a filter for the sports you picked.</span></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <p><strong>The password</strong> is checked by the sign-up function, not the page, so it can't be skipped by poking at the website. It's the same code as the original invite links, which still work.</p>
+    <p><strong>Each game only goes out once.</strong> The poller remembers every drop-in it has announced, until a day after the game, so a game that gets re-listed doesn't trigger a second email.</p>
+
+    <h2>What's next</h2>
+    <p>Counting. Every new drop-in will be tallied per day, and the <a href="/live/">Live page</a> will chart how many show up and how many are flag football.</p>
+  </article>
+
+  <section class="wide try">
+    <div><h2>Want in?</h2><p>You'll need the password from me.</p></div>
+    <a class="button" href="/volo/open/">Sign up for alerts →</a>
+  </section>
+</main>
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
 </body>
 </html>
