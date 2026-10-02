@@ -20,7 +20,7 @@
 .hero-shot.panel { background: var(--panel); display: flex; justify-content: center; gap: 28px; padding: 36px 24px 0; flex-wrap: wrap; }
 .hero-shot.panel img { width: auto; max-height: 520px; border-radius: 18px 18px 0 0; box-shadow: 0 8px 28px rgba(21, 25, 30, 0.18); }
 .hero-shot figcaption, .flow figcaption { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 14px 22px; font-size: 14px; color: var(--muted); background: var(--surface); }
-.hero-shot.panel figcaption { flex-basis: 100%; margin: 0 -24px; }
+.hero-shot.panel figcaption { flex: none; width: calc(100% + 48px); margin: 0 -24px; }
 
 .prose { display: flex; flex-direction: column; gap: 20px; font-size: 18px; line-height: 1.7; color: var(--ink-2); }
 .prose h2 { margin: 16px 0 0; font-size: 26px; line-height: 1.25; font-weight: 600; color: var(--ink); }
