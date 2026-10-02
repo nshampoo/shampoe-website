@@ -83,7 +83,6 @@
 
   <article class="narrow prose">
     <p><strong>Stitching projects together.</strong> When you open /citibike/app/, the router strips the prefix and forwards the request to Citi Bike Tides' own CloudFront distribution. The map loads its data with relative paths, so it works here without any changes, and every deploy of that project shows up here immediately.</p>
-    <p><strong>A caching bug worth knowing about.</strong> CloudFront caches by the path after the router rewrites it, so /citibike/app/ and my own homepage both looked like "/" and briefly served each other. The router now tags each app's requests with a header that's part of the cache key, so they're stored separately.</p>
 
     <h2>How the Live page stays fresh</h2>
     <p>A small Python Lambda runs every 15 minutes, gathers the latest from each source, and writes a single live.json file. The page reads that file and fills in the tiles. If one source is down, its tile simply stays hidden.</p>
