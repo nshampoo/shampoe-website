@@ -73,7 +73,7 @@ body {
   color: var(--ink);
   font: 16px/1.6 var(--font);
 }
-img { max-width: 100%; display: block; }
+img { max-width: 100%; height: auto; display: block; }
 [hidden] { display: none !important; }
 a { color: var(--link); text-decoration: none; }
 a:hover { color: var(--link-hover); }
