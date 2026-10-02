@@ -74,6 +74,7 @@ body {
   font: 16px/1.6 var(--font);
 }
 img { max-width: 100%; display: block; }
+[hidden] { display: none !important; }
 a { color: var(--link); text-decoration: none; }
 a:hover { color: var(--link-hover); }
 h1, h2, h3 { text-wrap: balance; }

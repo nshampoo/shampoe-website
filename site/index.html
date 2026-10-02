@@ -3,26 +3,146 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>shampoe</title>
-<meta name="description" content="Tinkering in progress.">
+<title>Nick Shampoe</title>
+<meta name="description" content="A New Yorker who builds tools for small problems. Citi Bike Tides, Tomo, Volo Drop-in Alerts, and Park It.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/site.css">
+<script src="/site.js"></script>
 <style>
-body { min-height: 100vh; display: flex; flex-direction: column; text-align: center; }
-main { flex: 1; display: grid; place-content: center; padding: 16px; }
-p { color: var(--muted); margin: 0; }
+main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80px; }
+.intro { max-width: 820px; display: flex; flex-direction: column; gap: 22px; }
+.intro h1 { margin: 0; font-size: clamp(32px, 5vw, 48px); line-height: 1.14; font-weight: 500; letter-spacing: -0.02em; }
+.intro h1 em { font-style: normal; color: var(--accent); }
+.intro p { margin: 0; font-size: 18px; color: var(--muted); }
+.intro .pill { align-self: flex-start; }
+.intro .pill .dot { color: var(--tinker); }
+.intro .pill b { font-weight: 500; color: var(--ink); }
+
+.workshop { display: flex; flex-direction: column; gap: 14px; }
+.tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+@media (max-width: 820px) { .tools { grid-template-columns: minmax(0, 1fr); } }
+
+.tool { display: flex; flex-direction: column; overflow: hidden; }
+.tool .shot { height: 250px; background: var(--panel); overflow: hidden; display: flex; justify-content: center; }
+.tool .shot img { object-fit: cover; }
+.tool-tides .shot img { width: 100%; height: 100%; object-position: 50% 45%; }
+.tool-tomo .shot { align-items: flex-end; }
+.tool-tomo .shot img { width: 300px; height: 228px; object-position: 50% 30%; border-radius: 14px 14px 0 0; box-shadow: 0 -2px 18px rgba(120, 60, 10, 0.18); }
+.tool-volo .shot { position: relative; }
+.tool-volo .shot img { width: 100%; height: 100%; object-position: 50% 20%; filter: blur(5px); transform: scale(1.06); opacity: 0.7; }
+.tool-volo .shot .lock { position: absolute; inset: 0; display: grid; place-items: center; }
+.tool-volo .shot .lock span { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #241b4d; color: #ffffff; font-size: 14px; font-weight: 500; }
+.tool-park .shot { align-items: flex-start; padding-top: 26px; }
+.tool-park .shot img { width: 210px; height: 260px; object-position: 50% 8%; border-radius: 26px 26px 0 0; box-shadow: 0 6px 22px rgba(10, 70, 40, 0.18); }
+
+.tool .body { padding: 24px 26px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1; }
+.tool .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.tool h2 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
+.tool h2 a { color: var(--ink); }
+.tool h2 a:hover { color: var(--accent); }
+.tool p { margin: 0; font-size: 15.5px; line-height: 1.62; color: var(--ink-2); }
+.tool .links { display: flex; justify-content: space-between; gap: 12px; padding: 14px 26px; border-top: 1px solid var(--rule-soft); font-size: 14px; font-weight: 500; }
+.tool .links .secondary { color: var(--muted); }
+.tool .links a.secondary:hover { color: var(--ink); }
 </style>
 </head>
 <body>
-<header>
-  <nav>
-    <a href="/" aria-current="page">Home</a>
-    <a href="/citibike/">Citi Bike Migrations</a>
-    <a href="/volo/">Volo Alerts</a>
-  </nav>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
 </header>
-<main>
-  <p>tinkering…</p>
+<!-- /header -->
+
+<main class="wrap">
+  <section class="intro">
+    <span class="pill" id="tinkering" hidden><span class="dot"></span>Currently tinkering on: <b id="tinkering-repo"></b><span id="tinkering-when"></span></span>
+    <h1>I'm a New Yorker who builds <em>tools for small problems</em> in my life, and sometimes just for things I think are cool.</h1>
+    <p>Everything here is real and running. Read how I built each one, then go poke at it.</p>
+  </section>
+
+  <section class="workshop" aria-labelledby="workshop-title">
+    <h2 class="eyebrow" id="workshop-title">The workshop</h2>
+    <div class="tools">
+
+      <article class="card tool tool-tides">
+        <div class="shot"><img src="/img/tides.jpg" alt="Citi Bike Tides map of New York with stations gaining bikes in blue and losing bikes in red" width="1200" height="760" loading="lazy"></div>
+        <div class="body">
+          <div class="meta"><span class="tag tool">Data viz</span><span class="status live"><span class="dot"></span>Live</span></div>
+          <h2><a href="/citibike/">Citi Bike Tides</a></h2>
+          <p>Sleep in, and every bike near you is gone. Ride home at six, and there's nowhere to dock. I kept noticing the pattern, and since I love data, I wanted to actually see it: where bikes drain out of and where they pile up, hour by hour.</p>
+          <dl class="specs"><dt>Stack</dt><dd>Python Lambda · S3 · CloudFront · CDK</dd><dt>Runs</dt><dd>every 5 minutes</dd></dl>
+        </div>
+        <div class="links"><a href="/citibike/">How and why I built it →</a><a class="secondary" href="/citibike/open/">Open the map</a></div>
+      </article>
+
+      <article class="card tool tool-tomo">
+        <div class="shot"><img src="/img/tomo.jpg" alt="Tomo profile card showing a runner at sunset with their pace and distance" width="829" height="900" loading="lazy"></div>
+        <div class="body">
+          <div class="meta"><span class="tag tool">iPhone app · with friends</span><span class="status live"><span class="dot"></span>App Store</span></div>
+          <h2><a href="/tomo/">Tomo</a></h2>
+          <p>My college teammates at ASU and I are runners at heart. For years we talked about an app where you could land in a new town and immediately have someone to run and explore with. So we built it: find runners nearby who match your pace, make a friend, plan a run.</p>
+          <dl class="specs"><dt>Stack</dt><dd>React Native · Expo · Firebase</dd><dt>Where</dt><dd>iPhone, on the App Store</dd></dl>
+        </div>
+        <div class="links"><a href="/tomo/">How and why we built it →</a><a class="secondary" href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">Get the app</a></div>
+      </article>
+
+      <article class="card tool tool-volo">
+        <div class="shot">
+          <img src="/img/volo.jpg" alt="" width="1200" height="760" loading="lazy">
+          <div class="lock"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Friends only</span></div>
+        </div>
+        <div class="body">
+          <div class="meta"><span class="tag tool">Notifier</span><span class="status muted">Password</span></div>
+          <h2><a href="/volo/">Volo Drop-in Alerts</a></h2>
+          <p>I've been playing a lot of flag football, and there was no way to get pinged when a drop-in spot opens up. I want to play as much as possible, so I built the alert. Yes, it's password protected. The whole advantage is that everyone else doesn't get it. 😈</p>
+          <dl class="specs"><dt>Stack</dt><dd>Python Lambda · DynamoDB · SNS · CDK</dd><dt>Runs</dt><dd>hourly</dd></dl>
+        </div>
+        <div class="links"><a href="/volo/">How and why I built it →</a><a class="secondary" href="/volo/open/">Got the password?</a></div>
+      </article>
+
+      <article class="card tool tool-park">
+        <div class="shot"><img src="/img/parking.jpg" alt="Park It map of the Upper West Side with open dock counts at each station" width="598" height="1300" loading="lazy"></div>
+        <div class="body">
+          <div class="meta"><span class="tag tool">iPhone app · Citi Bike parking</span><span class="status progress">In progress</span></div>
+          <h2><a href="/park-it/">Park It</a></h2>
+          <p>I wanted a safer way to check for open docks on my phone, without pulling it out mid-ride and fiddling with the Citi Bike app. Now when I'm rolling up home, one glance shows my favorite and nearby stations.</p>
+          <dl class="specs"><dt>Stack</dt><dd>SwiftUI · WidgetKit · App Intents</dd><dt>Where</dt><dd>my phone, for now</dd></dl>
+        </div>
+        <div class="links"><a href="/park-it/">How and why I'm building it →</a><span class="secondary">Coming to the App Store</span></div>
+      </article>
+    </div>
+  </section>
 </main>
+
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
 </body>
 </html>
