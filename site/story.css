@@ -1,0 +1,50 @@
+/* The how-and-why page template, shared by every tool's write-up. */
+.story { display: flex; flex-direction: column; align-items: center; gap: 40px; padding-block: 56px 80px; }
+.story .narrow { width: 100%; max-width: 720px; }
+.story .wide { width: 100%; max-width: 1040px; }
+
+.story-head { display: flex; flex-direction: column; gap: 18px; }
+.story-head .back { font-size: 14px; color: var(--muted); }
+.story-head .back:hover { color: var(--ink); }
+.story-head .tag { align-self: flex-start; }
+.story-head h1 { margin: 0; font-size: clamp(34px, 5vw, 46px); line-height: 1.12; font-weight: 600; letter-spacing: -0.02em; }
+.story-head .lede { margin: 0; font-size: 20px; line-height: 1.55; color: var(--ink-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; font-family: var(--mono); font-size: 12.5px; }
+.chips > span { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 6px; background: var(--surface); color: var(--ink-2); }
+.chips .live { color: var(--live); }
+.chips .progress { color: var(--progress); }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 4px; }
+
+.hero-shot { overflow: hidden; }
+.hero-shot img { width: 100%; height: auto; }
+.hero-shot.panel { background: var(--panel); display: flex; justify-content: center; gap: 28px; padding: 36px 24px 0; flex-wrap: wrap; }
+.hero-shot.panel img { width: auto; max-height: 520px; border-radius: 18px 18px 0 0; box-shadow: 0 8px 28px rgba(21, 25, 30, 0.18); }
+.hero-shot figcaption, .flow figcaption { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 14px 22px; font-size: 14px; color: var(--muted); background: var(--surface); }
+.hero-shot.panel figcaption { flex-basis: 100%; margin: 0 -24px; }
+
+.prose { display: flex; flex-direction: column; gap: 20px; font-size: 18px; line-height: 1.7; color: var(--ink-2); }
+.prose h2 { margin: 16px 0 0; font-size: 26px; line-height: 1.25; font-weight: 600; color: var(--ink); }
+.prose p, .prose ul { margin: 0; }
+.prose ul { padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+.prose strong { color: var(--ink); font-weight: 600; }
+
+/* "How it works" pipeline: boxes joined by arrows; stacks vertically on phones. */
+.flow { margin: 0; padding: 28px 28px 0; overflow: hidden; display: flex; flex-direction: column; gap: 18px; }
+.flow ol { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: 8px; }
+.flow li.step { flex: 1; min-width: 0; padding: 14px; border-radius: 10px; background: var(--surface-2); display: flex; flex-direction: column; gap: 4px; }
+.flow li.step.key { background: var(--tag); }
+.flow li.step b { font-size: 15px; font-weight: 600; color: var(--ink); }
+.flow li.step span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.flow li.step.key span { color: var(--tag-ink); }
+.flow li.arrow { flex: none; display: grid; place-items: center; color: var(--faint); }
+.flow figcaption { margin: 0 -28px; }
+@media (max-width: 760px) {
+  .flow ol { flex-direction: column; }
+  .flow li.arrow svg { transform: rotate(90deg); }
+}
+
+.try { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; padding: 28px 32px; border-radius: 16px; background: var(--ink); color: var(--bg); }
+.try h2 { margin: 0; font-size: 24px; font-weight: 600; }
+.try p { margin: 4px 0 0; color: var(--bg); opacity: 0.75; }
+.try .button { background: var(--bg); color: var(--ink); }
+.try .button:hover { background: var(--bg); color: var(--ink); opacity: 0.9; }

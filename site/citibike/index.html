@@ -3,24 +3,107 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Citi Bike Migrations · shampoe</title>
-<meta name="description" content="Where Citi Bike stations gain and lose bikes across New York City, animated through the day.">
+<title>Citi Bike Tides: how and why · Nick Shampoe</title>
+<meta name="description" content="Why I built a live map of where Citi Bike stations gain and lose bikes, and how it works.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/site.css">
-<style>
-/* Header on top, Citi Bike Tides (served live under /citibike/app/) fills the rest of the screen. */
-body { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-iframe { flex: 1; width: 100%; border: 0; display: block; }
-</style>
+<link rel="stylesheet" href="/story.css">
+<script src="/site.js"></script>
 </head>
 <body>
-<header>
-  <nav>
-    <a href="/">Home</a>
-    <a href="/citibike/" aria-current="page">Citi Bike Migrations</a>
-    <a href="/volo/">Volo Alerts</a>
-  </nav>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
 </header>
-<iframe src="/citibike/app/" title="Citi Bike Tides" allow="fullscreen"></iframe>
+<!-- /header -->
+<main class="wrap story tool-tides">
+  <header class="narrow story-head">
+    <a class="back" href="/">← Back to the workshop</a>
+    <span class="tag tool">How and why I built it</span>
+    <h1>Citi Bike Tides</h1>
+    <p class="lede">Watching New York's bikes drain out of neighborhoods every morning and flood back every evening.</p>
+    <div class="chips"><span class="live"><span class="dot"></span>Live</span><span>Python · AWS Lambda · S3 · CloudFront · CDK</span><span>Updates every 5 min</span></div>
+    <div class="ctas"><a class="button primary" href="/citibike/open/">Open the map →</a></div>
+  </header>
+
+  <figure class="card wide hero-shot" style="margin: 0">
+    <img src="/img/tides.jpg" alt="Citi Bike Tides showing bikes gained and lost across New York over the last hour" width="1200" height="760">
+    <figcaption><span>The live view. Blue stations are filling up, red ones are emptying.</span><a href="/citibike/open/">Open the real thing →</a></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <h2>The itch</h2>
+    <p>If I slept in, every bike near me was gone. If I rode home after work, there was nowhere to dock. It happened often enough that it clearly wasn't luck. I love data, so I wanted to see the pattern for myself: where the bikes go every morning, and where they all end up at night.</p>
+
+    <h2>What it does</h2>
+    <p>Every Citi Bike station is a dot on the map, colored by whether it gained or lost bikes over the previous hour. Press play and the whole day animates: Midtown and the Financial District soak up bikes in the morning, then the residential neighborhoods fill back up at night.</p>
+    <ul>
+      <li><strong>Live</strong> plays back today, minute by minute, up to a few minutes ago.</li>
+      <li><strong>Average weekday</strong> shows the typical tide, built from past trip data.</li>
+      <li><strong>Trucks</strong> is an experiment: spotting the overnight vans that rebalance bikes between stations.</li>
+    </ul>
+
+    <h2>How it works</h2>
+    <p>Citi Bike publishes how many bikes are at every station. I save a copy every minute, then every five minutes I pack the latest hour into a small file the map can play back.</p>
+  </article>
+
+  <figure class="card wide flow" style="margin: 0">
+    <ol>
+          <li class="step"><b>Citi Bike feed</b><span>every station's bikes</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>Snapshot Lambda</b><span>every minute</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>Raw snapshots</b><span>S3</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step key"><b>Builder Lambda</b><span>every 5 minutes</span></li>
+          <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
+          <li class="step"><b>The map</b><span>CloudFront → you</span></li>
+    </ol>
+    <figcaption><span>The whole pipeline: two small scheduled functions and some files. No servers to babysit.</span></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <p>Snapshots land exactly on the minute, so every hour starts at :00 and the hourly gains and losses add up exactly. The builder runs just after each fifth snapshot (:02, :07, :12…), so the map is never more than a few minutes behind.</p>
+    <p>The raw snapshots are kept separately from the website, so the site can be torn down and rebuilt without losing any data.</p>
+
+    <h2>What's next</h2>
+    <p>Finishing the Trucks view. Bikes don't only move by riders: vans quietly shuffle them around overnight, and I want to see where.</p>
+  </article>
+
+  <section class="wide try">
+    <div><h2>Go watch the tide</h2><p>It's live right now.</p></div>
+    <a class="button" href="/citibike/open/">Open Citi Bike Tides →</a>
+  </section>
+</main>
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
 </body>
 </html>
