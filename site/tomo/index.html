@@ -10,6 +10,12 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/story.css">
+<style>
+/* App Store frames already include the phone and an orange background; the panel continues it. */
+.tool-tomo .hero-shot.panel { background: linear-gradient(#ef6a3c, #f6b13d); gap: 16px; padding: 28px 20px 0; }
+.tool-tomo .hero-shot.panel img { max-height: 430px; border-radius: 12px 12px 0 0; box-shadow: none; }
+.tool-tomo .hero-shot.panel figcaption { width: calc(100% + 40px); margin: 0 -20px; }
+</style>
 <script src="/site.js"></script>
 </head>
 <body>
@@ -38,16 +44,18 @@
   <header class="narrow story-head">
     <a class="back" href="/">← Back to the workshop</a>
     <span class="tag tool">How and why we built it</span>
-    <h1>Tomo</h1>
-    <p class="lede">Land in a new town and have someone to run with by the weekend.</p>
-    <div class="chips"><span class="live"><span class="dot"></span>On the App Store</span><span>React Native · Expo · Firebase</span><span>Built with friends</span></div>
+    <h1 class="with-icon"><img src="/img/tomo-icon.jpg" alt="Tomo app icon" width="64" height="64">Tomo</h1>
+    <p class="lede">See your friends' planned runs on a map, join one, and meet new runners wherever you are.</p>
+    <div class="chips"><span class="live"><span class="dot"></span>Free on the App Store</span><span>React Native · Expo · Firebase</span><span>Built with friends</span></div>
     <div class="ctas"><a class="button primary" href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">Get Tomo on the App Store →</a></div>
   </header>
 
   <figure class="card wide hero-shot panel" style="margin: 0">
-    <img src="/img/tomo.jpg" alt="A Tomo runner profile: photo, short bio, city, pace, and preferred distance" width="829" height="900">
-    <img src="/img/tomo-chat.jpg" alt="Tomo matches list and a chat planning a Saturday morning run" width="1100" height="548" style="align-self: center; border-radius: 14px; max-height: 300px">
-    <figcaption><span>Profiles show pace and distance up front. Match, chat, and plan the run.</span><a href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">See it on the App Store →</a></figcaption>
+    <img src="/img/tomo-store-2.jpg" alt="Map of Central Park with friends' upcoming runs, each showing distance and time" width="586" height="1285">
+    <img src="/img/tomo-store-4.jpg" alt="Your planned runs listed with time, place, distance, and pace" width="586" height="1285">
+    <img src="/img/tomo-store-3.jpg" alt="Explore: a nearby runner's profile with pace range and distance away" width="586" height="1285">
+    <img src="/img/tomo-store-1.jpg" alt="Nick's Tomo profile with pace range, city, and a circle of running friends" width="586" height="1285">
+    <figcaption><span>From the App Store listing: the run map, your plans, Explore, and your profile.</span><a href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">See it on the App Store →</a></figcaption>
   </figure>
 
   <article class="narrow prose">
@@ -56,15 +64,15 @@
 
     <h2>What it does</h2>
     <ul>
-      <li><strong>Profiles built for runners:</strong> photos, a short bio, your usual pace range, and how far you like to go.</li>
-      <li><strong>Matching</strong> on pace, distance from you, and your preferences, with a swipe deck to say yes or pass.</li>
-      <li><strong>Chat</strong> with your matches to plan the run.</li>
-      <li><strong>Run meetups:</strong> post a run with a time, place, distance, and pace, and your matches can join.</li>
-      <li><strong>Push notifications</strong> for new matches, friend requests, and meetups.</li>
+      <li><strong>A map of planned runs:</strong> see when and where your friends are running nearby, with the distance and pace.</li>
+      <li><strong>Join with one tap</strong> and you're instantly in a chat with everyone going.</li>
+      <li><strong>Nothing fits your schedule?</strong> Post your own run and let others join you.</li>
+      <li><strong>Recommended routes</strong> that runners in your area love to meet at, plus your past runs to re-create.</li>
+      <li><strong>Meet new runners</strong> nearby based on pace and training, and add them as friends.</li>
     </ul>
 
     <h2>How it works</h2>
-    <p>One React Native codebase built with Expo, backed by Firebase. The app talks to Firebase directly for sign-in and data, and Cloud Functions react to changes, like sending a push when you get a new match.</p>
+    <p>One React Native codebase built with Expo, backed by Firebase. The app talks to Firebase directly for sign-in and data, and Cloud Functions react to changes, like sending a push when a friend posts a run or someone joins yours.</p>
   </article>
 
   <figure class="card wide flow" style="margin: 0">
@@ -73,7 +81,7 @@
           <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
           <li class="step"><b>Firebase</b><span>Auth · Firestore · Storage</span></li>
           <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
-          <li class="step key"><b>Cloud Functions</b><span>matches, meetups, photos</span></li>
+          <li class="step key"><b>Cloud Functions</b><span>new runs, joins, friends</span></li>
           <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
           <li class="step"><b>Expo push</b><span>notifications</span></li>
           <li class="arrow" aria-hidden="true"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18M14 2l5 5-5 5"></path></svg></li>
@@ -88,7 +96,7 @@
   </article>
 
   <section class="wide try">
-    <div><h2>Find your running buddy</h2><p>On the App Store for iPhone.</p></div>
+    <div><h2>Find your running buddy</h2><p>Free on the App Store.</p></div>
     <a class="button" href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">Get Tomo →</a>
   </section>
 </main>

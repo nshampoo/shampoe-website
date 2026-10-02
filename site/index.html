@@ -28,8 +28,9 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
 .tool .shot { height: 250px; background: var(--panel); overflow: hidden; display: flex; justify-content: center; }
 .tool .shot img { object-fit: cover; }
 .tool-tides .shot img { width: 100%; height: 100%; object-position: 50% 45%; }
-.tool-tomo .shot { align-items: flex-end; }
-.tool-tomo .shot img { width: 300px; height: 228px; object-position: 50% 30%; border-radius: 14px 14px 0 0; box-shadow: 0 -2px 18px rgba(120, 60, 10, 0.18); }
+/* The App Store frames have an orange-to-yellow background; the panel continues it. */
+.tool-tomo .shot { align-items: flex-start; background: linear-gradient(#ef6a3c, #f2913b); }
+.tool-tomo .shot img { width: 270px; }
 .tool-volo .shot { position: relative; }
 .tool-volo .shot img { width: 100%; height: 100%; object-position: 50% 20%; filter: blur(5px); transform: scale(1.06); opacity: 0.7; }
 .tool-volo .shot .lock { position: absolute; inset: 0; display: grid; place-items: center; }
@@ -40,6 +41,8 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
 .tool .body { padding: 24px 26px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1; }
 .tool .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .tool h2 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
+.tool h2.with-icon { display: flex; align-items: center; gap: 10px; }
+.tool h2.with-icon img { width: 32px; height: 32px; border-radius: 8px; }
 .tool h2 a { color: var(--ink); }
 .tool h2 a:hover { color: var(--accent); }
 .tool p { margin: 0; font-size: 15.5px; line-height: 1.62; color: var(--ink-2); }
@@ -94,11 +97,11 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
       </article>
 
       <article class="card tool tool-tomo">
-        <div class="shot"><img src="/img/tomo.jpg" alt="Tomo profile card showing a runner at sunset with their pace and distance" width="829" height="900" loading="lazy"></div>
+        <div class="shot"><img src="/img/tomo-store-2.jpg" alt="Tomo map of Central Park showing friends' upcoming runs with distance and time" width="586" height="1285" loading="lazy"></div>
         <div class="body">
           <div class="meta"><span class="tag tool">iPhone app · with friends</span><span class="status live"><span class="dot"></span>App Store</span></div>
-          <h2><a href="/tomo/">Tomo</a></h2>
-          <p>My college teammates at ASU and I are runners at heart. For years we talked about an app where you could land in a new town and immediately have someone to run and explore with. So we built it: find runners nearby who match your pace, make a friend, plan a run.</p>
+          <h2 class="with-icon"><img src="/img/tomo-icon.jpg" alt="" width="32" height="32"><a href="/tomo/">Tomo</a></h2>
+          <p>My college teammates at ASU and I are runners at heart. For years we talked about an app where you could land in a new town and immediately have someone to run and explore with. So we built it: see your friends' planned runs on a map, join one, or meet new runners near you.</p>
           <dl class="specs"><dt>Stack</dt><dd>React Native · Expo · Firebase</dd><dt>Where</dt><dd>iPhone, on the App Store</dd></dl>
         </div>
         <div class="links"><a href="/tomo/">How and why we built it →</a><a class="secondary" href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">Get the app</a></div>
