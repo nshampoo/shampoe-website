@@ -77,21 +77,14 @@ def get_json(url, **kwargs):
 # ---------------------------------------------------------------- GitHub
 
 def github(now):
-    """Most recently pushed public repos, newest first."""
-    events = get_json(f"https://api.github.com/users/{GITHUB_USER}/events/public?per_page=100",
-                      headers={"Accept": "application/vnd.github+json"})
-    repos = {}
-    for e in events:
-        if e["type"] not in ("PushEvent", "CreateEvent"):
-            continue
-        full = e["repo"]["name"]  # "owner/repo"; pushes to a friend's public repo count too
-        repos.setdefault(full, e["created_at"])  # events are newest first
-    recent = sorted(repos.items(), key=lambda kv: kv[1], reverse=True)[:5]
-    return {"repos": [{
-        "name": full.split("/", 1)[1] if full.startswith(GITHUB_USER + "/") else full,
-        "url": f"https://github.com/{full}",
-        "pushed": t,
-    } for full, t in recent]}
+    """Most recently pushed public repos, newest first.
+
+    Uses each repo's pushed_at rather than the public events feed: GitHub delays that feed
+    by up to several hours and doesn't guarantee its order, so it can miss today's pushes.
+    """
+    repos = get_json(f"https://api.github.com/users/{GITHUB_USER}/repos?sort=pushed&direction=desc&per_page=5",
+                     headers={"Accept": "application/vnd.github+json"})
+    return {"repos": [{"name": r["name"], "url": r["html_url"], "pushed": r["pushed_at"]} for r in repos if r.get("pushed_at")]}
 
 
 # ---------------------------------------------------------------- Goodreads
