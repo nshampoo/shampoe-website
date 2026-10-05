@@ -84,10 +84,14 @@ def github(now):
     for e in events:
         if e["type"] not in ("PushEvent", "CreateEvent"):
             continue
-        name = e["repo"]["name"].split("/", 1)[1]
-        repos.setdefault(name, e["created_at"])  # events are newest first
+        full = e["repo"]["name"]  # "owner/repo"; pushes to a friend's public repo count too
+        repos.setdefault(full, e["created_at"])  # events are newest first
     recent = sorted(repos.items(), key=lambda kv: kv[1], reverse=True)[:5]
-    return {"repos": [{"name": n, "url": f"https://github.com/{GITHUB_USER}/{n}", "pushed": t} for n, t in recent]}
+    return {"repos": [{
+        "name": full.split("/", 1)[1] if full.startswith(GITHUB_USER + "/") else full,
+        "url": f"https://github.com/{full}",
+        "pushed": t,
+    } for full, t in recent]}
 
 
 # ---------------------------------------------------------------- Goodreads
