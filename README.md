@@ -41,7 +41,7 @@ After editing `partials/`, run `node scripts/sync-chrome.mjs` before deploying.
 
 - [x] Add Tomo
 - [x] Volo: per-day drop-in counts (total + flag football) charted on the Live page
-- [ ] Connect Strava (API app + credentials in SSM) so the run, game, and monthly tiles appear
+- [x] Connect Strava (API app + credentials in SSM)
 - [x] Resume PDF at `site/resume.pdf`
 - [ ] Backburner: Spotify "now playing" on the Live page (needs a Spotify developer app)
 - [x] Add the Citi Bike Parking app (Park It) as its own page
