@@ -13,7 +13,7 @@ const html = readFileSync(file, "utf8");
 const m = html.match(/(<!-- projects -->\n)([\s\S]*?)(\n<!-- \/projects -->)/);
 if (!m) throw new Error("no <!-- projects --> markers in site/index.html");
 
-const rows = m[2].split(/\n\n(?=\s*<article)/).map((block, i) => ({ block, i, repo: block.match(/data-repo="([^"]+)"/)?.[1] }));
+const rows = [...m[2].matchAll(/[ \t]*<article[\s\S]*?<\/article>/g)].map(([block], i) => ({ block, i, repo: block.match(/data-repo="([^"]+)"/)?.[1] }));
 
 async function gh(path) {
   const res = await fetch(`https://api.github.com/${path}`, { headers: { Accept: "application/vnd.github+json" } });
