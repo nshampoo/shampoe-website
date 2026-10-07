@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nick Shampoe</title>
-<meta name="description" content="A New Yorker who builds tools for small problems. Citi Bike Tides, Tomo, Volo Drop-in Alerts, and Park It.">
+<meta name="description" content="A New Yorker who builds tools for small problems. The Epic Weekend Planner, Citi Bike Tides, Park It, Volo Drop-in Alerts, and Tomo.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,41 +38,62 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
 .strip .book .t { font-size: 16px; }
 
 .workshop { display: flex; flex-direction: column; gap: 14px; }
-.tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
-@media (max-width: 820px) { .tools { grid-template-columns: minmax(0, 1fr); } }
+.workshop .head { display: flex; justify-content: space-between; align-items: center; gap: 12px 20px; flex-wrap: wrap; }
+.filters { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.filters button { flex: none; padding: 6px 13px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink-2); font: 500 13.5px var(--font); cursor: pointer; }
+.filters button:hover { color: var(--ink); background: var(--rule-soft); }
+.filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.tools { display: flex; flex-direction: column; gap: 24px; }
 
-.tool { display: flex; flex-direction: column; overflow: hidden; }
-.tool .shot { height: 250px; background: var(--panel); overflow: hidden; display: flex; justify-content: center; }
+/* One row per project: screenshot on the left (40%), text on the right (60%). */
+.tool { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); overflow: hidden; }
+.tool[hidden] { display: none; }
+.tool .shot { position: relative; min-height: 300px; background: var(--panel); overflow: hidden; display: flex; justify-content: center; }
 .tool .shot img { object-fit: cover; }
-.tool-tides .shot img { width: 100%; height: 100%; object-position: 50% 45%; }
+.tool .text { display: flex; flex-direction: column; }
+@media (max-width: 820px) { .tool { grid-template-columns: minmax(0, 1fr); } .tool .shot { height: 240px; min-height: 0; } }
+
+/* Website screenshots sit inset from the top-left corner, like a browser window. */
+/* Full-bleed screenshots fill the row whatever its height. */
+.tool-epic .shot img, .tool-site .shot img, .tool-tides .shot img, .tool-volo .shot img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tool-epic .shot img, .tool-site .shot img { inset: 28px 0 0 28px; width: calc(100% - 28px); height: calc(100% - 28px); border-radius: 10px 0 0 0; box-shadow: 0 6px 22px rgba(21, 25, 30, 0.14); }
+/* Show the resort panel, not the empty map. */
+.tool-epic .shot img { object-position: 100% 0; }
+.tool-site .shot img { object-position: 0 0; }
+.tool-tides .shot img { object-position: 50% 45%; }
 /* The App Store frames have an orange-to-yellow background; the panel continues it. */
 .tool-tomo .shot { align-items: flex-start; background: linear-gradient(#ef6a3c, #f2913b); }
-.tool-tomo .shot img { width: 270px; }
+.tool-tomo .shot img { width: 240px; height: 300px; object-position: 50% 0; }
 .tool-volo .shot { position: relative; }
-.tool-volo .shot img { width: 100%; height: 100%; object-position: 50% 20%; filter: blur(5px); transform: scale(1.06); opacity: 0.7; }
+.tool-volo .shot img { object-position: 50% 20%; filter: blur(5px); transform: scale(1.06); opacity: 0.7; }
 .tool-volo .shot .lock { position: absolute; inset: 0; display: grid; place-items: center; }
 .tool-volo .shot .lock span { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #241b4d; color: #ffffff; font-size: 14px; font-weight: 500; }
 .tool-park .shot { align-items: flex-start; padding-top: 26px; }
-.tool-park .shot img { width: 210px; height: 260px; object-position: 50% 8%; border-radius: 26px 26px 0 0; box-shadow: 0 6px 22px rgba(10, 70, 40, 0.18); }
+.tool-park .shot img { width: 210px; height: 280px; object-position: 50% 8%; border-radius: 26px 26px 0 0; box-shadow: 0 6px 22px rgba(10, 70, 40, 0.18); }
 
-.tool .body { padding: 24px 26px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1; }
+.tool .body { padding: 24px 28px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
 .tool .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.tool .meta .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tool .meta .tag { background: var(--tag); color: var(--tag-ink); border: 0; cursor: pointer; }
+.tool .meta .chips .tag:hover { box-shadow: inset 0 0 0 1px var(--tag-ink); }
 .tool h2 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
 .tool h2.with-icon { display: flex; align-items: center; gap: 10px; }
 .tool h2.with-icon img { width: 32px; height: 32px; border-radius: 8px; }
 .tool h2 a { color: var(--ink); }
 .tool h2 a:hover { color: var(--accent); }
 .tool p { margin: 0; font-size: 15.5px; line-height: 1.62; color: var(--ink-2); }
-.tool .links { display: flex; justify-content: space-between; gap: 12px; padding: 14px 26px; border-top: 1px solid var(--rule-soft); font-size: 14px; font-weight: 500; }
+.tool p.sub { margin-top: -6px; font-size: 16px; color: var(--muted); }
+.tool .links { display: flex; justify-content: space-between; gap: 12px; padding: 14px 28px; border-top: 1px solid var(--rule-soft); font-size: 14px; font-weight: 500; }
 .tool .links .secondary { color: var(--muted); }
 .tool .links a.secondary:hover { color: var(--ink); }
-.tool.feature { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-.tool.feature .shot { height: auto; min-height: 280px; padding: 28px 0 0 28px; justify-content: flex-start; align-items: flex-start; }
-.tool.feature .shot img { width: 100%; height: 100%; object-fit: cover; object-position: 0 0; border-radius: 10px 0 0 0; box-shadow: 0 6px 22px rgba(21, 25, 30, 0.14); }
-.tool.feature .text { display: flex; flex-direction: column; }
-@media (max-width: 820px) { .tool.feature { grid-template-columns: minmax(0, 1fr); } .tool.feature .shot { height: 250px; min-height: 0; } }
-/* Show the resort panel, not the empty map. */
-.tool.feature.tool-epic .shot img { object-position: 100% 0; }
+
+/* This site: the frame around everything else, so it sits apart from the list, quieter and unfiltered. */
+.frame { display: flex; flex-direction: column; gap: 14px; }
+.frame .tool { background: transparent; box-shadow: none; border: 1px solid var(--rule); grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+.frame .tool .shot { min-height: 220px; }
+.frame .tool h2 { font-size: 21px; }
+@media (max-width: 820px) { .frame .tool { grid-template-columns: minmax(0, 1fr); } .frame .tool .shot { height: 200px; } }
 </style>
 </head>
 <body>
@@ -133,84 +154,134 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
   </section>
 
   <section class="workshop" aria-labelledby="workshop-title">
-    <h2 class="eyebrow" id="workshop-title">The workshop</h2>
+    <div class="head">
+      <h2 class="eyebrow" id="workshop-title">The workshop</h2>
+      <div class="filters" id="filters" role="group" aria-label="Show projects" hidden>
+        <button type="button" data-chip="" aria-pressed="true">All</button>
+        <button type="button" data-chip="ios" aria-pressed="false">iOS</button>
+        <button type="button" data-chip="citibike" aria-pressed="false">Citi Bike</button>
+        <button type="button" data-chip="dataviz" aria-pressed="false">Data viz</button>
+        <button type="button" data-chip="sports" aria-pressed="false">Sports</button>
+      </div>
+    </div>
+    <!-- Rows are ordered newest first by GitHub repo creation date (data-repo), rewritten at deploy by
+         scripts/order-projects.mjs. Rows without a data-repo go last. data-chips must match the filters above. -->
     <div class="tools">
-
-      <article class="card tool feature tool-epic">
+<!-- projects -->
+      <article class="card tool tool-epic" data-repo="nshampoo/nyc-skiing-visualizer" data-chips="dataviz sports">
         <!-- TODO: re-shoot site/img/epic.jpg after the first real storm. It's from October, so every pin is gray and Hunter says 0 in. -->
         <div class="shot"><img src="/img/epic.jpg" alt="Epic Weekend Planner map of the Northeast with Hunter Mountain's snowfall and trip links from NYC" width="1200" height="760" loading="lazy"></div>
         <div class="text">
           <div class="body">
-            <div class="meta"><span class="tag tool">Trip planner</span><span class="status live"><span class="dot"></span>Live</span></div>
+            <div class="meta"><span class="chips"><button type="button" class="tag" data-chip="dataviz">Data viz</button><button type="button" class="tag" data-chip="sports">Sports</button></span><span class="status live"><span class="dot"></span>Live</span></div>
             <h2><a href="/epicPlanning/">Epic Weekend Planner</a></h2>
-            <p>I paid for an Epic Pass and still talk myself out of most ski weekends, because planning one from NYC means six tabs. So I made it one click: a map of where it's snowing on the pass, with the flights, hotels, drive, and rental car for this weekend already filled in.</p>
-            <dl class="specs"><dt>Stack</dt><dd>JavaScript · Leaflet · Open-Meteo · CloudFront</dd><dt>Covers</dt><dd>61 Epic resorts</dd></dl>
+            <p class="sub">Where it's snowing on the Epic Pass, and the trip from NYC in one click.</p>
+            <p>I paid for an Epic Pass and still talk myself out of most ski weekends, because planning one means six tabs. So it's one map: pick a snowy mountain and the flights, hotel, drive, and rental car are already filled in.</p>
+            <dl class="specs"><dt>Stack</dt><dd>JavaScript · Leaflet · Open-Meteo · CloudFront</dd></dl>
           </div>
           <div class="links"><a href="/epicPlanning/">How and why I built it →</a><a class="secondary" href="/epicPlanning/open/">Find snow</a></div>
         </div>
       </article>
 
-      <article class="card tool tool-tides">
+      <article class="card tool tool-tides" data-repo="nshampoo/citibike-migration" data-chips="citibike dataviz">
         <div class="shot"><img src="/img/tides.jpg" alt="Citi Bike Tides map of New York with stations gaining bikes in blue and losing bikes in red" width="1200" height="760" loading="lazy"></div>
-        <div class="body">
-          <div class="meta"><span class="tag tool">Data viz</span><span class="status live"><span class="dot"></span>Live</span></div>
-          <h2><a href="/citibike/">Citi Bike Tides</a></h2>
-          <p>Sleep in, and every bike near you is gone. Ride home at six, and there's nowhere to dock. I kept noticing the pattern, and since I love data, I wanted to actually see it: where bikes drain out of and where they pile up, hour by hour.</p>
-          <dl class="specs"><dt>Stack</dt><dd>Python Lambda · S3 · CloudFront · CDK</dd><dt>Runs</dt><dd>every 5 minutes</dd></dl>
+        <div class="text">
+          <div class="body">
+            <div class="meta"><span class="chips"><button type="button" class="tag" data-chip="citibike">Citi Bike</button><button type="button" class="tag" data-chip="dataviz">Data viz</button></span><span class="status live"><span class="dot"></span>Live</span></div>
+            <h2><a href="/citibike/">Citi Bike Tides</a></h2>
+            <p class="sub">Where New York's bikes drain out and pile up, hour by hour.</p>
+            <p>Sleep in, and every bike near you is gone. Ride home at six, and there's nowhere to dock. I love data, so I wanted to actually see the pattern.</p>
+            <dl class="specs"><dt>Stack</dt><dd>Python Lambda · S3 · CloudFront · CDK</dd></dl>
+          </div>
+          <div class="links"><a href="/citibike/">How and why I built it →</a><a class="secondary" href="/citibike/open/">Open the map</a></div>
         </div>
-        <div class="links"><a href="/citibike/">How and why I built it →</a><a class="secondary" href="/citibike/open/">Open the map</a></div>
       </article>
 
-      <article class="card tool tool-tomo">
-        <div class="shot"><img src="/img/tomo-store-2.jpg" alt="Tomo map of Central Park showing friends' upcoming runs with distance and time" width="586" height="1285" loading="lazy"></div>
-        <div class="body">
-          <div class="meta"><span class="tag tool">iPhone app · with friends</span><span class="status live"><span class="dot"></span>App Store</span></div>
-          <h2 class="with-icon"><img src="/img/tomo-icon.jpg" alt="" width="32" height="32"><a href="/tomo/">Tomo</a></h2>
-          <p>My college teammates at ASU and I are runners at heart. For years we talked about an app where you could land in a new town and immediately have someone to run and explore with. So we built it: see your friends' planned runs on a map, join one, or meet new runners near you.</p>
-          <dl class="specs"><dt>Stack</dt><dd>React Native · Expo · Firebase</dd><dt>Where</dt><dd>iPhone, on the App Store</dd></dl>
+      <article class="card tool tool-park" data-repo="nshampoo/citibike-parking" data-chips="ios citibike">
+        <div class="shot"><img src="/img/parking.jpg" alt="Park It map of the Upper West Side with open dock counts at each station" width="598" height="1300" loading="lazy"></div>
+        <div class="text">
+          <div class="body">
+            <div class="meta"><span class="chips"><button type="button" class="tag" data-chip="ios">iOS</button><button type="button" class="tag" data-chip="citibike">Citi Bike</button></span><span class="status progress">In progress</span></div>
+            <h2><a href="/park-it/">Park It</a></h2>
+            <p class="sub">Open Citi Bike docks at a glance, without fiddling mid-ride.</p>
+            <p>Pulling out my phone mid-ride to dig through the Citi Bike app isn't safe. Now when I'm rolling up home, one glance shows open docks at my favorite and nearby stations.</p>
+            <dl class="specs"><dt>Stack</dt><dd>SwiftUI · WidgetKit · App Intents</dd></dl>
+          </div>
+          <div class="links"><a href="/park-it/">How and why I'm building it →</a><span class="secondary">Coming to the App Store</span></div>
         </div>
-        <div class="links"><a href="/tomo/">How and why we built it →</a><a class="secondary" href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">Get the app</a></div>
       </article>
 
-      <article class="card tool tool-volo">
+      <article class="card tool tool-volo" data-repo="nshampoo/volo-notification-service" data-chips="sports">
         <div class="shot">
           <img src="/img/volo.jpg" alt="" width="1200" height="760" loading="lazy">
           <div class="lock"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Friends only</span></div>
         </div>
-        <div class="body">
-          <div class="meta"><span class="tag tool">Notifier</span><span class="status muted">Password</span></div>
-          <h2><a href="/volo/">Volo Drop-in Alerts</a></h2>
-          <p>I've been playing a lot of flag football, and there was no way to get pinged when a drop-in spot opens up. I want to play as much as possible, so I built the alert. Yes, it's password protected. The whole advantage is that everyone else doesn't get it. 😈</p>
-          <dl class="specs"><dt>Stack</dt><dd>Python Lambda · DynamoDB · SNS · CDK</dd><dt>Runs</dt><dd>hourly</dd></dl>
-        </div>
-        <div class="links"><a href="/volo/">How and why I built it →</a><a class="secondary" href="/volo/open/">Got the password?</a></div>
-      </article>
-
-      <article class="card tool tool-park">
-        <div class="shot"><img src="/img/parking.jpg" alt="Park It map of the Upper West Side with open dock counts at each station" width="598" height="1300" loading="lazy"></div>
-        <div class="body">
-          <div class="meta"><span class="tag tool">iPhone app · Citi Bike parking</span><span class="status progress">In progress</span></div>
-          <h2><a href="/park-it/">Park It</a></h2>
-          <p>I wanted a safer way to check for open docks on my phone, without pulling it out mid-ride and fiddling with the Citi Bike app. Now when I'm rolling up home, one glance shows my favorite and nearby stations.</p>
-          <dl class="specs"><dt>Stack</dt><dd>SwiftUI · WidgetKit · App Intents</dd><dt>Where</dt><dd>my phone, for now</dd></dl>
-        </div>
-        <div class="links"><a href="/park-it/">How and why I'm building it →</a><span class="secondary">Coming to the App Store</span></div>
-      </article>
-      <article class="card tool feature tool-site">
-        <div class="shot"><img src="/img/this-site.jpg" alt="The Live page of this site: latest run, latest flag football game, Citi Bike numbers, and GitHub activity" width="1280" height="1000" loading="lazy"></div>
         <div class="text">
           <div class="body">
-            <div class="meta"><span class="tag tool">Website</span><span class="status live"><span class="dot"></span>You're on it</span></div>
-            <h2><a href="/this-site/">This site</a></h2>
-            <p>One home for everything I build. It stitches my separately deployed projects onto one domain at the edge, and the Live page refreshes itself every 15 minutes from five sources.</p>
-            <dl class="specs"><dt>Stack</dt><dd>CloudFront · S3 · Lambda · CDK</dd><dt>Costs</dt><dd>about a dollar or two a month</dd></dl>
+            <div class="meta"><span class="chips"><button type="button" class="tag" data-chip="sports">Sports</button></span><span class="status muted">Password</span></div>
+            <h2><a href="/volo/">Volo Drop-in Alerts</a></h2>
+            <p class="sub">A ping the moment a flag football drop-in spot opens.</p>
+            <p>I want to play as much flag football as possible, and there was no way to hear when a spot opens up, so I built the alert. Yes, it's password protected. The whole advantage is that everyone else doesn't get it. 😈</p>
+            <dl class="specs"><dt>Stack</dt><dd>Python Lambda · DynamoDB · SNS · CDK</dd></dl>
           </div>
-          <div class="links"><a href="/this-site/">How and why I built it →</a><a class="secondary" href="/live/">See the Live page</a></div>
+          <div class="links"><a href="/volo/">How and why I built it →</a><a class="secondary" href="/volo/open/">Got the password?</a></div>
         </div>
       </article>
+
+      <article class="card tool tool-tomo" data-chips="ios sports">
+        <div class="shot"><img src="/img/tomo-store-2.jpg" alt="Tomo map of Central Park showing friends' upcoming runs with distance and time" width="586" height="1285" loading="lazy"></div>
+        <div class="text">
+          <div class="body">
+            <div class="meta"><span class="chips"><button type="button" class="tag" data-chip="ios">iOS</button><button type="button" class="tag" data-chip="sports">Sports</button></span><span class="status live"><span class="dot"></span>App Store</span></div>
+            <h2 class="with-icon"><img src="/img/tomo-icon.jpg" alt="" width="32" height="32"><a href="/tomo/">Tomo</a></h2>
+            <p class="sub">Plan runs with friends, and find runners wherever you land.</p>
+            <p>My college teammates at ASU and I always wanted an app for landing in a new town and having someone to run with. So we built it: see friends' planned runs on a map, join one, or meet runners nearby.</p>
+            <dl class="specs"><dt>Stack</dt><dd>React Native · Expo · Firebase</dd></dl>
+          </div>
+          <div class="links"><a href="/tomo/">How and why we built it →</a><a class="secondary" href="https://apps.apple.com/us/app/tomo-plan-run-friend/id6757677503">Get the app</a></div>
+        </div>
+      </article>
+<!-- /projects -->
     </div>
   </section>
+
+  <section class="frame" aria-labelledby="frame-title">
+    <h2 class="eyebrow" id="frame-title">Holding it all together</h2>
+    <article class="tool tool-site">
+      <div class="shot"><img src="/img/this-site.jpg" alt="The Live page of this site: latest run, latest flag football game, Citi Bike numbers, and GitHub activity" width="1280" height="1000" loading="lazy"></div>
+      <div class="text">
+        <div class="body">
+          <div class="meta"><span class="tag">Website</span><span class="status live"><span class="dot"></span>You're on it</span></div>
+          <h2><a href="/this-site/">This site</a></h2>
+          <p>One home for everything I build. It stitches my separately deployed projects onto one domain at the edge, and the Live page refreshes itself every 15 minutes from five sources.</p>
+          <dl class="specs"><dt>Stack</dt><dd>CloudFront · S3 · Lambda · CDK</dd></dl>
+        </div>
+        <div class="links"><a href="/this-site/">How and why I built it →</a><a class="secondary" href="/live/">See the Live page</a></div>
+      </div>
+    </article>
+  </section>
 </main>
+<script>
+// Chips filter the workshop to one topic. The bar and the chips on each row do the same thing;
+// picking the active chip again goes back to All.
+(function () {
+  var bar = document.getElementById("filters");
+  var section = bar.closest(".workshop");
+  var rows = section.querySelectorAll("article.tool");
+  var active = "";
+  function show(chip) {
+    active = chip === active ? "" : chip;
+    for (var b of bar.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.chip === active));
+    for (var r of rows) r.hidden = !!active && r.dataset.chips.split(" ").indexOf(active) < 0;
+    if (section.getBoundingClientRect().top < 0) section.scrollIntoView({ behavior: "smooth" });
+  }
+  section.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-chip]");
+    if (b) show(b.dataset.chip);
+  });
+  bar.hidden = false;
+})();
+</script>
 
 <!-- footer -->
 <footer class="site-footer">
