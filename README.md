@@ -47,3 +47,5 @@ After editing `partials/`, run `node scripts/sync-chrome.mjs` before deploying.
 - [x] Resume PDF at `site/resume.pdf`
 - [ ] Backburner: Spotify "now playing" on the Live page (needs a Spotify developer app)
 - [x] Add the Citi Bike Parking app (Park It) as its own page
+- [ ] Some ski visualization on the Live page, tied to the Epic Weekend Planner (nothing obvious yet: Strava ski days, pass cost per day, and snowiest-resort tiles all felt off)
+- [ ] Re-shoot `site/img/epic.jpg` once it snows (the current one shows 0 in everywhere)
