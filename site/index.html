@@ -87,13 +87,6 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
 .tool .links { display: flex; justify-content: space-between; gap: 12px; padding: 14px 28px; border-top: 1px solid var(--rule-soft); font-size: 14px; font-weight: 500; }
 .tool .links .secondary { color: var(--muted); }
 .tool .links a.secondary:hover { color: var(--ink); }
-
-/* This site: the frame around everything else, so it sits apart from the list, quieter and unfiltered. */
-.frame { display: flex; flex-direction: column; gap: 14px; }
-.frame .tool { background: transparent; box-shadow: none; border: 1px solid var(--rule); grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
-.frame .tool .shot { min-height: 220px; }
-.frame .tool h2 { font-size: 21px; }
-@media (max-width: 820px) { .frame .tool { grid-template-columns: minmax(0, 1fr); } .frame .tool .shot { height: 200px; } }
 </style>
 </head>
 <body>
@@ -183,6 +176,20 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
         </div>
       </article>
 
+      <article class="card tool tool-site" data-repo="nshampoo/shampoe-website" data-chips="dataviz">
+        <div class="shot"><img src="/img/this-site.jpg" alt="The Live page of this site: latest run, latest flag football game, Citi Bike numbers, and GitHub activity" width="1280" height="1000" loading="lazy"></div>
+        <div class="text">
+          <div class="body">
+            <div class="meta"><span class="chips"><button type="button" class="tag" data-chip="dataviz">Data viz</button></span><span class="status live"><span class="dot"></span>You're on it</span></div>
+            <h2><a href="/this-site/">This site</a></h2>
+            <p class="sub">One home for everything I build, plus a Live page of my week.</p>
+            <p>It stitches my separately deployed projects onto one domain at the edge, and the Live page refreshes itself every 15 minutes from five sources.</p>
+            <dl class="specs"><dt>Stack</dt><dd>CloudFront · S3 · Lambda · CDK</dd></dl>
+          </div>
+          <div class="links"><a href="/this-site/">How and why I built it →</a><a class="secondary" href="/live/">See the Live page</a></div>
+        </div>
+      </article>
+
       <article class="card tool tool-tides" data-repo="nshampoo/citibike-migration" data-chips="citibike dataviz">
         <div class="shot"><img src="/img/tides.jpg" alt="Citi Bike Tides map of New York with stations gaining bikes in blue and losing bikes in red" width="1200" height="760" loading="lazy"></div>
         <div class="text">
@@ -243,22 +250,6 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
       </article>
 <!-- /projects -->
     </div>
-  </section>
-
-  <section class="frame" aria-labelledby="frame-title">
-    <h2 class="eyebrow" id="frame-title">Holding it all together</h2>
-    <article class="tool tool-site">
-      <div class="shot"><img src="/img/this-site.jpg" alt="The Live page of this site: latest run, latest flag football game, Citi Bike numbers, and GitHub activity" width="1280" height="1000" loading="lazy"></div>
-      <div class="text">
-        <div class="body">
-          <div class="meta"><span class="tag">Website</span><span class="status live"><span class="dot"></span>You're on it</span></div>
-          <h2><a href="/this-site/">This site</a></h2>
-          <p>One home for everything I build. It stitches my separately deployed projects onto one domain at the edge, and the Live page refreshes itself every 15 minutes from five sources.</p>
-          <dl class="specs"><dt>Stack</dt><dd>CloudFront · S3 · Lambda · CDK</dd></dl>
-        </div>
-        <div class="links"><a href="/this-site/">How and why I built it →</a><a class="secondary" href="/live/">See the Live page</a></div>
-      </div>
-    </article>
   </section>
 </main>
 <script>
