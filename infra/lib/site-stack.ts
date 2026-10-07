@@ -86,7 +86,7 @@ function redirect(req, uri) {
 function handler(event) {
   var req = event.request;
   if (req.headers.host && req.headers.host.value === '${wwwName}') return redirect(req, 'https://${domainName}' + req.uri);
-  var m = req.uri.match(/^\\/([a-z0-9-]+)(\\/app)?(\\/.*)?$/);
+  var m = req.uri.match(/^\\/([A-Za-z0-9-]+)(\\/app)?(\\/.*)?$/);
   if (m && APPS.indexOf(m[1]) >= 0) {
     if (!m[3]) return redirect(req, req.uri + '/');
     if (m[2]) {
