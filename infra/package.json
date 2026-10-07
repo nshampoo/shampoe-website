@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "deploy": "node ../scripts/order-projects.mjs && cdk deploy"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

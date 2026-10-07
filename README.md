@@ -32,8 +32,10 @@ Strava needs credentials in SSM at `/shampoe-site/strava` (SecureString JSON wit
 ```
 cd infra
 npm install
-AWS_PROFILE=personal npx cdk deploy
+AWS_PROFILE=personal npm run deploy
 ```
+
+`npm run deploy` first runs `scripts/order-projects.mjs`, which orders the workshop rows newest first by each row's GitHub repo (`data-repo`) creation date, then deploys. Commit `site/index.html` if it reordered anything.
 
 After editing `partials/`, run `node scripts/sync-chrome.mjs` before deploying.
 
