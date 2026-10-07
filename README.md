@@ -9,6 +9,7 @@ Personal site: a workshop of the tools I've built, a live "dashboard of randomne
 | `site/index.html` | Workshop (homepage): intro, live strip, tool cards |
 | `site/<tool>/` | How-and-why page per tool (`citibike`, `tomo`, `volo`, `park-it`, `this-site`), using `story.css` |
 | `site/citibike/open/`, `site/volo/open/` | The tool itself under the site header (iframe of `/<tool>/app/`) |
+| `site/epicPlanning/` | Epic Weekend Planner under the site header (iframe of `/epicPlanning/app/`) |
 | `site/live/` | Live page; `live.js` renders `/live.json` there and on the homepage |
 | `site/about/` | About page (photos in `site/img/about/`) |
 | `partials/` | Shared header and footer; copy into every page with `node scripts/sync-chrome.mjs` |
