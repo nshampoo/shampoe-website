@@ -66,11 +66,13 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
 .tool .links { display: flex; justify-content: space-between; gap: 12px; padding: 14px 26px; border-top: 1px solid var(--rule-soft); font-size: 14px; font-weight: 500; }
 .tool .links .secondary { color: var(--muted); }
 .tool .links a.secondary:hover { color: var(--ink); }
-.tool-site { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-.tool-site .shot { height: auto; min-height: 280px; padding: 28px 0 0 28px; justify-content: flex-start; align-items: flex-start; }
-.tool-site .shot img { width: 100%; height: 100%; object-fit: cover; object-position: 0 0; border-radius: 10px 0 0 0; box-shadow: 0 6px 22px rgba(21, 25, 30, 0.14); }
-.tool-site .text { display: flex; flex-direction: column; }
-@media (max-width: 820px) { .tool-site { grid-template-columns: minmax(0, 1fr); } .tool-site .shot { height: 250px; min-height: 0; } }
+.tool.feature { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.tool.feature .shot { height: auto; min-height: 280px; padding: 28px 0 0 28px; justify-content: flex-start; align-items: flex-start; }
+.tool.feature .shot img { width: 100%; height: 100%; object-fit: cover; object-position: 0 0; border-radius: 10px 0 0 0; box-shadow: 0 6px 22px rgba(21, 25, 30, 0.14); }
+.tool.feature .text { display: flex; flex-direction: column; }
+@media (max-width: 820px) { .tool.feature { grid-template-columns: minmax(0, 1fr); } .tool.feature .shot { height: 250px; min-height: 0; } }
+/* Show the resort panel, not the empty map. */
+.tool.feature.tool-epic .shot img { object-position: 100% 0; }
 </style>
 </head>
 <body>
@@ -134,6 +136,19 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
     <h2 class="eyebrow" id="workshop-title">The workshop</h2>
     <div class="tools">
 
+      <article class="card tool feature tool-epic">
+        <div class="shot"><img src="/img/epic.jpg" alt="Epic Weekend Planner map of the Northeast with Hunter Mountain's snowfall and trip links from NYC" width="1200" height="760" loading="lazy"></div>
+        <div class="text">
+          <div class="body">
+            <div class="meta"><span class="tag tool">Trip planner</span><span class="status live"><span class="dot"></span>Live</span></div>
+            <h2><a href="/epicPlanning/">Epic Weekend Planner</a></h2>
+            <p>I paid for an Epic Pass and still talk myself out of most ski weekends, because planning one from NYC means six tabs. So I made it one click: a map of where it's snowing on the pass, with the flights, hotels, drive, and rental car for this weekend already filled in.</p>
+            <dl class="specs"><dt>Stack</dt><dd>JavaScript · Leaflet · Open-Meteo · CloudFront</dd><dt>Covers</dt><dd>61 Epic resorts</dd></dl>
+          </div>
+          <div class="links"><a href="/epicPlanning/">How and why I built it →</a><a class="secondary" href="/epicPlanning/open/">Find snow</a></div>
+        </div>
+      </article>
+
       <article class="card tool tool-tides">
         <div class="shot"><img src="/img/tides.jpg" alt="Citi Bike Tides map of New York with stations gaining bikes in blue and losing bikes in red" width="1200" height="760" loading="lazy"></div>
         <div class="body">
@@ -180,7 +195,7 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
         </div>
         <div class="links"><a href="/park-it/">How and why I'm building it →</a><span class="secondary">Coming to the App Store</span></div>
       </article>
-      <article class="card tool tool-site">
+      <article class="card tool feature tool-site">
         <div class="shot"><img src="/img/this-site.jpg" alt="The Live page of this site: latest run, latest flag football game, Citi Bike numbers, and GitHub activity" width="1280" height="1000" loading="lazy"></div>
         <div class="text">
           <div class="body">

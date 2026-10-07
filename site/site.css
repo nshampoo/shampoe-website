@@ -26,6 +26,7 @@
   --volo-tag: #ebe7fb;  --volo-ink: #4a37a8;  --volo-panel: #e9e6f7;
   --park-tag: #ddf1e5;  --park-ink: #15663a;  --park-panel: #dcefe3;
   --site-tag: #e6e9ee;  --site-ink: #3f4852;  --site-panel: #dde2e9;
+  --epic-tag: #dcf1f6;  --epic-ink: #0e6a80;  --epic-panel: #dcebf0;
 
   --font: Geist, "Helvetica Neue", Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -45,6 +46,7 @@
     --volo-tag: #2a2448;  --volo-ink: #b3a6f5;  --volo-panel: #262238;
     --park-tag: #173326;  --park-ink: #84d3a5;  --park-panel: #1a2e24;
     --site-tag: #262c33;  --site-ink: #c3cad2;  --site-panel: #222830;
+    --epic-tag: #15333b;  --epic-ink: #7fd0e3;  --epic-panel: #1a2b30;
     color-scheme: dark;
   }
 }
@@ -60,6 +62,7 @@
   --volo-tag: #2a2448;  --volo-ink: #b3a6f5;  --volo-panel: #262238;
   --park-tag: #173326;  --park-ink: #84d3a5;  --park-panel: #1a2e24;
   --site-tag: #262c33;  --site-ink: #c3cad2;  --site-panel: #222830;
+  --epic-tag: #15333b;  --epic-ink: #7fd0e3;  --epic-panel: #1a2b30;
   color-scheme: dark;
 }
 @media (max-width: 900px) { :root { --gutter: 24px; } }
@@ -141,6 +144,7 @@ h1, h2, h3 { text-wrap: balance; }
 .tool-volo { --tag: var(--volo-tag); --tag-ink: var(--volo-ink); --panel: var(--volo-panel); }
 .tool-park { --tag: var(--park-tag); --tag-ink: var(--park-ink); --panel: var(--park-panel); }
 .tool-site { --tag: var(--site-tag); --tag-ink: var(--site-ink); --panel: var(--site-panel); }
+.tool-epic { --tag: var(--epic-tag); --tag-ink: var(--epic-ink); --panel: var(--epic-panel); }
 .tag.tool { background: var(--tag); color: var(--tag-ink); }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
