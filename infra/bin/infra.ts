@@ -14,5 +14,6 @@ new SiteStack(app, 'PersonalSite', {
     citibike: 'd2g10dtmnepqv0.cloudfront.net', // Citi Bike Tides (~/Code/citibike-migration)
     volo: 'd1wfj80t6mlo6z.cloudfront.net', // Volo Drop-in Alerts (~/Code/volo-notification-service)
     epicPlanning: 'doccazxgqqfry.cloudfront.net', // Epic Weekend Planner (~/Code/nyc-skiing-calculator)
+    trades: 'd3p413m2n0s459.cloudfront.net', // Trade Ideator (~/Code/fantasy-football-trade-ideator)
   },
 });

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trade Ideator: how and why · Nick Shampoe</title>
+<meta name="description" content="Why I built a trade finder for my Sleeper fantasy football leagues, and how it scores trades with FantasyCalc values and each team's lineup.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/story.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- /header -->
+<main class="wrap story tool-trades">
+  <header class="narrow story-head">
+    <a class="back" href="/">← Back to the workshop</a>
+    <span class="tag tool">How and why I built it</span>
+    <h1>Trade Ideator</h1>
+    <p class="lede">Trade ideas for my Sleeper redraft leagues that help my lineup and still make sense for the other manager.</p>
+    <div class="chips"><span class="live"><span class="dot"></span>Live</span><span>TypeScript · React · Sleeper · FantasyCalc · S3 · CloudFront · Lambda · CDK</span><span>Redraft leagues</span></div>
+    <div class="ctas"><a class="button primary" href="/trades/open/">Find a trade →</a><a class="button" href="https://github.com/nshampoo/fantasy-football-trade-ideator">Code on GitHub</a></div>
+  </header>
+
+  <figure class="card wide hero-shot" style="margin: 0">
+    <img src="/img/trades.jpg" alt="Trade Ideator showing two trade ideas for one of my leagues, each with both sides, lineup gains, and the reasons behind it" width="1200" height="760">
+    <figcaption><span>Two of the ideas for my 10-team PPR league: what I give, what I get, how each lineup changes, and why it might work for them.</span><a href="/trades/open/">Try it with your league →</a></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <!-- TODO: the itch, in my own words. -->
+    <h2>The itch</h2>
+    <p>I play in two redraft leagues on Sleeper, and I already check FantasyCalc to see whether a trade is fair. A trade calculator only answers half the question, though. It tells me two packages are worth about the same, not whether my lineup gets better, or which manager has the hole that my bench can fill. I wanted something that looks at the whole league and brings me the trades worth sending.</p>
+
+    <h2>What it does</h2>
+    <p>Type a Sleeper username, pick a league, and it looks at every team.</p>
+    <ul>
+      <li><strong>Trade ideas</strong>, ranked, with both sides, how much each lineup improves, the value balance, and a plain-English reason. Fair, Balanced, and Aggressive change how much the other team has to win too.</li>
+      <li><strong>My team</strong>: my best lineup, each position against the league median, and the trade chips worth more in a trade than on my bench. I can lock players I won't move, or shop one to see who'd pay for him.</li>
+      <li><strong>The league</strong>: every team's strengths and holes in one table. Open a team to target one of its players.</li>
+      <li><strong>An evaluator</strong> for building any trade by hand, or tweaking one of the ideas.</li>
+      <li><strong>Links on every player</strong> to FantasyCalc, ESPN, FantasyPros, and Sleeper, for the latest news and injuries before I hit send.</li>
+    </ul>
+
+    <h2>How it works</h2>
+    <p>Your browser does almost everything. It pulls the league's rosters and settings straight from Sleeper, and rest-of-season values from FantasyCalc for that exact format: team count, PPR, and superflex. Then it builds each team's best lineup from the league's real starting slots, and tries the one-for-one and two-for-one swaps between teams whose needs fit together.</p>
+    <p>A trade only makes the list if my lineup gets better and the other manager gets fair value back. Packages are compared the way trade calculators do it, so two decent players don't automatically buy a star.</p>
+  </article>
+
+  <figure class="card wide flow" style="margin: 0">
+    <ol>
+          <li class="step"><b>Sleeper</b><span>rosters and league settings</span></li>
+          <li class="step key"><b>FantasyCalc</b><span>values for this league's format</span></li>
+          <li class="step"><b>Best lineups</b><span>every team, real starting slots</span></li>
+          <li class="step key"><b>Trade search</b><span>needs that fit, fair value back</span></li>
+          <li class="step"><b>Ideas</b><span>with the reasons why</span></li>
+    </ol>
+    <figcaption><span>All of this runs in your browser. AWS serves the app plus one file: the player list, which a Lambda refreshes every evening.</span></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <p>Sleeper asks apps to download its full player list (about 5 MB) at most once a day. So a small Lambda fetches it at 6 pm New York time, after the Friday injury reports, and saves the few hundred KB the app needs. Values and rosters are always live. Anything newer than that evening's list is one click away in the player links.</p>
+
+    <h2>What's next</h2>
+    <ul>
+      <li><strong>A second opinion on value.</strong> Blend in Sleeper's projections, scored with each league's own settings, and FantasyPros' expert rankings.</li>
+      <li><strong>Buy low, sell high.</strong> Where projections and the trade market disagree, that's the trade to make.</li>
+      <li><strong>Share links</strong> that open a specific league, team, and trade.</li>
+      <li><strong>Keeper and dynasty leagues</strong>, with draft picks and age.</li>
+    </ul>
+  </article>
+
+  <section class="wide try">
+    <div><h2>Find your next trade</h2><p>Bring your Sleeper username. Rosters and values are live.</p></div>
+    <a class="button" href="/trades/open/">Open Trade Ideator →</a>
+  </section>
+</main>
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
+</body>
+</html>
