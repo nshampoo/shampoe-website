@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nick Shampoe</title>
-<meta name="description" content="A New Yorker who builds tools for small problems. The Epic Weekend Planner, Citi Bike Tides, Park It, Volo Drop-in Alerts, and Tomo.">
+<meta name="description" content="A New Yorker who builds tools for small problems. The Epic Weekend Planner, Trade Ideator, Citi Bike Tides, Park It, Volo Drop-in Alerts, and Tomo.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,11 +56,11 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
 
 /* Website screenshots sit inset from the top-left corner, like a browser window. */
 /* Full-bleed screenshots fill the row whatever its height. */
-.tool-epic .shot img, .tool-site .shot img, .tool-tides .shot img, .tool-volo .shot img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.tool-epic .shot img, .tool-site .shot img { inset: 28px 0 0 28px; width: calc(100% - 28px); height: calc(100% - 28px); border-radius: 10px 0 0 0; box-shadow: 0 6px 22px rgba(21, 25, 30, 0.14); }
+.tool-epic .shot img, .tool-site .shot img, .tool-trades .shot img, .tool-tides .shot img, .tool-volo .shot img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tool-epic .shot img, .tool-site .shot img, .tool-trades .shot img { inset: 28px 0 0 28px; width: calc(100% - 28px); height: calc(100% - 28px); border-radius: 10px 0 0 0; box-shadow: 0 6px 22px rgba(21, 25, 30, 0.14); }
 /* Show the resort panel, not the empty map. */
 .tool-epic .shot img { object-position: 100% 0; }
-.tool-site .shot img { object-position: 0 0; }
+.tool-site .shot img, .tool-trades .shot img { object-position: 0 0; }
 .tool-tides .shot img { object-position: 50% 45%; }
 /* The App Store frames have an orange-to-yellow background; the panel continues it. */
 .tool-tomo .shot { align-items: flex-start; background: linear-gradient(#ef6a3c, #f2913b); }
@@ -161,6 +161,20 @@ main { display: flex; flex-direction: column; gap: 56px; padding-block: 72px 80p
          scripts/order-projects.mjs. Rows without a data-repo go last. data-chips must match the filters above. -->
     <div class="tools">
 <!-- projects -->
+      <article class="card tool tool-trades" data-repo="nshampoo/fantasy-football-trade-ideator" data-chips="sports">
+        <div class="shot"><img src="/img/trades.jpg" alt="Trade Ideator showing two trade ideas for one of my leagues, each with both sides, lineup gains, and the reasons behind it" width="1200" height="760" loading="lazy"></div>
+        <div class="text">
+          <div class="body">
+            <div class="meta"><span class="chips"><button type="button" class="tag" data-chip="sports">Sports</button></span><span class="status live"><span class="dot"></span>Live</span></div>
+            <h2><a href="/trades/">Trade Ideator</a></h2>
+            <p class="sub">Trades that help my fantasy lineup and still make sense for the other manager.</p>
+            <p>A trade calculator tells me two packages are worth about the same, not whether my lineup gets better or who has the hole my bench can fill. So this looks at my whole Sleeper league and brings me the trades worth sending.</p>
+            <dl class="specs"><dt>Stack</dt><dd>TypeScript · React · Sleeper · FantasyCalc · CloudFront</dd></dl>
+          </div>
+          <div class="links"><a href="/trades/">How and why I built it →</a><a class="secondary" href="/trades/open/">Find a trade</a></div>
+        </div>
+      </article>
+
       <article class="card tool tool-epic" data-repo="nshampoo/nyc-skiing-visualizer" data-chips="dataviz sports">
         <!-- TODO: re-shoot site/img/epic.jpg after the first real storm. It's from October, so every pin is gray and Hunter says 0 in. -->
         <div class="shot"><img src="/img/epic.jpg" alt="Epic Weekend Planner map of the Northeast with Hunter Mountain's snowfall and trip links from NYC" width="1200" height="760" loading="lazy"></div>
