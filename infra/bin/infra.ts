@@ -15,5 +15,6 @@ new SiteStack(app, 'PersonalSite', {
     volo: 'd1wfj80t6mlo6z.cloudfront.net', // Volo Drop-in Alerts (~/Code/volo-notification-service)
     epicPlanning: 'doccazxgqqfry.cloudfront.net', // Epic Weekend Planner (~/Code/nyc-skiing-calculator)
     trades: 'd3p413m2n0s459.cloudfront.net', // Trade Ideator (~/Code/fantasy-football-trade-ideator)
+    flag: 'd33bwgha2p2ift.cloudfront.net', // Flag Football Simulator (~/Code/flag-football-simulator)
   },
 });

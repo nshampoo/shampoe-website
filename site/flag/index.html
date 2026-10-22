@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flag Football Simulator: how and why · Nick Shampoe</title>
+<meta name="description" content="Why I built a simulator for my 7v7 rec flag football league, and how it finds the best defense, rusher, and lineup against the kind of team we're playing.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/story.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- /header -->
+<main class="wrap story tool-flag">
+  <header class="narrow story-head">
+    <a class="back" href="/">← Back to the workshop</a>
+    <span class="tag tool">How and why I built it</span>
+    <h1>Flag Football Simulator</h1>
+    <p class="lede">A play-by-play simulator of my 7v7 rec flag football league that finds the best defense, rusher, and lineup against the kind of team we're playing.</p>
+    <div class="chips"><span class="live"><span class="dot"></span>Live</span><span>TypeScript · React · Web Worker · S3 · CloudFront · CDK</span><span>7v7 rec rules</span></div>
+    <div class="ctas"><a class="button primary" href="/flag/open/">Run a matchup →</a><a class="button" href="https://github.com/nshampoo/flag-football-simulator">Code on GitHub</a></div>
+  </header>
+
+  <figure class="card wide hero-shot" style="margin: 0">
+    <img src="/img/flag.jpg" alt="Flag Football Simulator's play viewer: a Cover 2 defense with its zone landmarks against a gunslinger offense, mid-play, with each route drawn" width="1200" height="760">
+    <figcaption><span>Cover 2 against a gunslinger, 3.3 seconds in. Dashed circles are each zone's landmark; the bold route is the QB's first read.</span><a href="/flag/open/">Watch a play →</a></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <!-- TODO: the itch, in my own words. -->
+    <h2>The itch</h2>
+    <p>I play linebacker in a 7v7 rec flag football league. Every week our defense has the same arguments: man or zone, who rushes, who plays safety, and what to do about the team whose QB only throws to one guy. I wanted answers that came from more than a hunch, so I built a simulator of our league and let it play thousands of snaps.</p>
+
+    <h2>Our league's rules</h2>
+    <ul>
+      <li><strong>7 on 7</strong>: a QB, a center, and five receivers, and the center can catch passes.</li>
+      <li><strong>A narrow field</strong>, about half as wide as a regulation one, so the sideline works like an extra defender.</li>
+      <li><strong>One rusher on a 5 second count.</strong> Before 5 seconds the QB can't run; after it he can, and the rusher can come.</li>
+      <li>That leaves <strong>6 on 6 in coverage</strong>, and no pick plays (rubs still happen).</li>
+    </ul>
+
+    <h2>What it does</h2>
+    <ul>
+      <li><strong>Play viewer</strong>: pick an opponent and a defense, and watch a play on a top-down field with every route drawn. Scrub through it in slow motion, or run 1,000 plays to see the averages.</li>
+      <li><strong>Best setup</strong>: pick an opponent and it finds the best defense for my roster, who rushes, and who plays where, with the runner-up, the margin, and the routes to watch for. One click shows that setup in the play viewer.</li>
+    </ul>
+    <p>Opponents come as types I recognize from the league: the Gunslinger who throws deep early, the Dink and Dunk team, Hero Ball (forcing it to one star), the Scrambler, and the Scared QB who holds it forever.</p>
+
+    <h2>How it works</h2>
+    <p>Each play is simulated ten times a second. Every player has six ratings (speed, agility, hands, catch height, man, and zone) that turn into how fast they run, how sharply they cut, how quickly they react, and how high they can catch. Receivers run real routes from sampled formations. Man defenders trail a step behind, so separation shows up at the breaks. Zone defenders read the QB's eyes, and safeties follow the rule we actually play by: never let anyone get behind you.</p>
+    <p>The QB is modeled on what I see at our games: he either throws a planned quick pass in the first half second, or uses the 5 second count and waits for someone to come open. Catches, interceptions, missed flag pulls, and yards after the catch all come out of the same physics.</p>
+  </article>
+
+  <figure class="card wide flow" style="margin: 0">
+    <ol>
+          <li class="step"><b>Opponent type</b><span>how their QB reads and throws</span></li>
+          <li class="step key"><b>Every setup</b><span>5 defenses × 7 rushers × 2 rush styles</span></li>
+          <li class="step"><b>Swap spots</b><span>who plays safety, who covers their star</span></li>
+          <li class="step key"><b>Fresh plays</b><span>800 snaps each to rank the finalists</span></li>
+          <li class="step"><b>Call card</b><span>best setup and what to watch for</span></li>
+    </ol>
+    <figcaption><span>The search runs in your browser, in about 10 seconds. Every setup sees the same sampled plays, so the comparisons are fair.</span></figcaption>
+  </figure>
+
+  <figure class="card wide hero-shot" style="margin: 0">
+    <img src="/img/flag-call.jpg" alt="A call card against a gunslinger: Cover 2 with Quick rushing on contain, the lineup, stats, routes to watch for, and every defense ranked" width="1200" height="760" loading="lazy">
+    <figcaption><span>Against a gunslinger it says Cover 2, with our shiftiest player rushing on contain, and to watch for shallow crosses.</span><a href="/flag/open/">Try another opponent →</a></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <p>The ratings are placeholders for now, so the call cards answer "what should a team like ours run," not "what should we run against Thursday's opponent." Even so, it has already moved a few arguments: our two-high defense holds up best against most teams, and a bracket on their star mostly just gets the ball thrown to whoever is left open.</p>
+
+    <h2>What's next</h2>
+    <ul>
+      <li><strong>Check it against real games.</strong> Log 20 to 30 real plays and tune the sim until it matches what happens on our field.</li>
+      <li><strong>Down and distance.</strong> Short yardage changes everything: the defense closes up and the quick throw disappears.</li>
+      <li><strong>Whole drives</strong>, and a defense that mixes its calls.</li>
+      <li><strong>Draw a play</strong> on my phone and see how it does against each defense.</li>
+    </ul>
+  </article>
+
+  <section class="wide try">
+    <div><h2>Run a matchup</h2><p>Pick an opponent type and watch a play, or find the best setup.</p></div>
+    <a class="button" href="/flag/open/">Open Flag Football Simulator →</a>
+  </section>
+</main>
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
+</body>
+</html>

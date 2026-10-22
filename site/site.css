@@ -28,6 +28,7 @@
   --site-tag: #e6e9ee;  --site-ink: #3f4852;  --site-panel: #dde2e9;
   --epic-tag: #dcf1f6;  --epic-ink: #0e6a80;  --epic-panel: #dcebf0;
   --trades-tag: #f6e7dc; --trades-ink: #8a4b21; --trades-panel: #f1e4da;
+  --flag-tag: #faf0d4;   --flag-ink: #7d5a00;   --flag-panel: #f3ead2;
 
   --font: Geist, "Helvetica Neue", Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -49,6 +50,7 @@
     --site-tag: #262c33;  --site-ink: #c3cad2;  --site-panel: #222830;
     --epic-tag: #15333b;  --epic-ink: #7fd0e3;  --epic-panel: #1a2b30;
     --trades-tag: #36241a; --trades-ink: #e8b28c; --trades-panel: #2e231c;
+    --flag-tag: #332a10;   --flag-ink: #e6c46a;   --flag-panel: #2b2517;
     color-scheme: dark;
   }
 }
@@ -66,6 +68,7 @@
   --site-tag: #262c33;  --site-ink: #c3cad2;  --site-panel: #222830;
   --epic-tag: #15333b;  --epic-ink: #7fd0e3;  --epic-panel: #1a2b30;
   --trades-tag: #36241a; --trades-ink: #e8b28c; --trades-panel: #2e231c;
+  --flag-tag: #332a10;   --flag-ink: #e6c46a;   --flag-panel: #2b2517;
   color-scheme: dark;
 }
 @media (max-width: 900px) { :root { --gutter: 24px; } }
@@ -149,6 +152,7 @@ h1, h2, h3 { text-wrap: balance; }
 .tool-site { --tag: var(--site-tag); --tag-ink: var(--site-ink); --panel: var(--site-panel); }
 .tool-epic { --tag: var(--epic-tag); --tag-ink: var(--epic-ink); --panel: var(--epic-panel); }
 .tool-trades { --tag: var(--trades-tag); --tag-ink: var(--trades-ink); --panel: var(--trades-panel); }
+.tool-flag { --tag: var(--flag-tag); --tag-ink: var(--flag-ink); --panel: var(--flag-panel); }
 .tag.tool { background: var(--tag); color: var(--tag-ink); }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
