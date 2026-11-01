@@ -33,7 +33,7 @@ Goodreads stopped serving its RSS feeds (404) on 2026-10-27, even for a logged-i
 ## Decided
 
 - 2026-11-01: AWS cost covers the whole account, not just this site, and refreshes once a day.
-- 2026-11-01: Feed health tile for every source, broken first; email ShampooShoulders+dashboard (kept in SSM) after 2 hours down.
+- 2026-11-01: Feed health tile for every source, broken first; email an address kept in SSM after 2 hours down.
 - 2026-11-01: Goodreads comes from a manual CSV export, since the RSS feeds are gone. Scraping shelf pages was too fragile.
 - 2026-11-01: Show `UnblendedCost`: the full cost of what was used, however it was paid for (card or credits).
 
