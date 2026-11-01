@@ -19,8 +19,8 @@ Shows the whole account's spend: this month so far, and the total over the last 
 ## Decided
 
 - 2026-11-01: AWS cost covers the whole account, not just this site, and refreshes once a day.
+- 2026-11-01: Show `UnblendedCost`: the full cost of what was used, however it was paid for (card or credits).
 
 ## Open decisions
 
-- `UnblendedCost` shows usage before credits. Switch to `NetUnblendedCost` if the tile should show what I actually pay after credits.
 - The total stops being all-time once the account is older than 13 months.
