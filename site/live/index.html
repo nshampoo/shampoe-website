@@ -228,7 +228,17 @@ details th { color: var(--muted); font-weight: 500; }
       </div>
     </article>
 
-    <article class="tile span-3" id="tile-title" hidden>
+    <article class="tile" id="tile-aws" hidden>
+      <span class="label aws">My AWS bill</span>
+      <span class="big" id="aws-month"></span>
+      <p id="aws-month-label">spent so far this month</p>
+      <div class="cb-sub">
+        <div><b id="aws-total"></b><span id="aws-since">total</span></div>
+      </div>
+      <span class="source" id="aws-as-of"></span>
+    </article>
+
+    <article class="tile span-2" id="tile-title" hidden>
       <span class="label">Activity title of the month</span>
       <div><div class="name" id="title-name"></div><div class="when" id="title-when"></div></div>
     </article>

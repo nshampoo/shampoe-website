@@ -19,6 +19,7 @@
 .big { font-size: 44px; line-height: 1.05; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .label.run { color: var(--run); } .label.game { color: var(--chart-football); } .label.cb { color: var(--tides-ink); }
 .label.books { color: var(--park-ink); } .label.repos { color: var(--tinker); } .label.volo { color: var(--volo-ink); }
+.label.aws { color: var(--ride); }
 
 svg .route { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .run-map { background: var(--run-panel); }

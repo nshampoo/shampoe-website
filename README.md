@@ -13,6 +13,8 @@ Personal site: a workshop of the tools I've built, a live "dashboard of randomne
 | `site/about/` | About page (photos in `site/img/about/`) |
 | `partials/` | Shared header and footer; copy into every page with `node scripts/sync-chrome.mjs` |
 | `live-feed/handler.py` | Lambda that writes `/live.json` every 15 minutes |
+| `live-feed/test_handler.py` | Unit tests for the feed (not deployed) |
+| `docs/DESIGN.md` | Goals, plan, and decisions |
 | `infra/` | CDK stack: S3, CloudFront (+ router function), ACM, Route 53, live feed |
 
 ## How requests are routed
@@ -23,7 +25,9 @@ Personal site: a workshop of the tools I've built, a live "dashboard of randomne
 
 ## Live data
 
-`live-feed/handler.py` gathers GitHub pushes, Goodreads books, Citi Bike Tides stats, Volo daily drop-in counts (DynamoDB table named in SSM at `/volo-notifier/stats-table`), and Strava. Each source is optional.
+`live-feed/handler.py` gathers GitHub pushes, Goodreads books, Citi Bike Tides stats, Volo daily drop-in counts (DynamoDB table named in SSM at `/volo-notifier/stats-table`), Strava, and the whole AWS account's cost (Cost Explorer, fetched once a UTC day since each call costs $0.01). Each source is optional.
+
+Test the feed's logic with `cd live-feed && python3 -m unittest`.
 
 Strava needs credentials in SSM at `/shampoe-site/strava` (SecureString JSON with `client_id`, `client_secret`, `refresh_token`). Run maps drop the first and last 400 m; only slow "Flag Football" activities count as games.
 

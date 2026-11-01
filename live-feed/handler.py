@@ -13,7 +13,7 @@ import time
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 import boto3
@@ -35,6 +35,7 @@ GAME_MAX_AVG_SPEED = 2.5
 s3 = boto3.client("s3")
 ssm = boto3.client("ssm")
 dynamodb = boto3.client("dynamodb")
+ce = boto3.client("ce")
 
 
 def handler(event, context):
@@ -46,6 +47,7 @@ def handler(event, context):
         ("citibike", citibike),
         ("volo", volo),
         ("strava", strava),
+        ("aws", aws_cost),
     ]:
         try:
             feed[name] = fetch(now)
@@ -58,7 +60,7 @@ def handler(event, context):
         ContentType="application/json",
         CacheControl="public, max-age=300",
     )
-    print(json.dumps({k: ("ok" if k in feed else "skipped") for k in ["github", "goodreads", "citibike", "volo", "strava"]}))
+    print(json.dumps({k: ("ok" if k in feed else "skipped") for k in ["github", "goodreads", "citibike", "volo", "strava", "aws"]}))
     return {"sections": [k for k in feed if k != "updated"]}
 
 
@@ -180,6 +182,40 @@ def volo(now):
         "counting_since": first,
         "all_time": {"total": sum(d["total"] for d in days), "football": sum(d["football"] for d in days)},
         "days": [d for d in days if d["day"] >= since],
+    }
+
+
+# ---------------------------------------------------------------- AWS cost
+
+def aws_cost(now):
+    """Whole-account spend: this month so far and the last 13 months in total.
+
+    Cost Explorer charges $0.01 per call, so the last result is reused until the UTC
+    day changes: about 30 calls a month instead of ~2,900 at the feed's 15-minute pace.
+    """
+    today = now.date()
+    try:
+        last = json.loads(s3.get_object(Bucket=os.environ["BUCKET"], Key="live.json")["Body"].read()).get("aws")
+    except s3.exceptions.NoSuchKey:
+        last = None
+    if last and last.get("as_of") == today.isoformat():
+        return last
+    resp = ce.get_cost_and_usage(
+        TimePeriod={"Start": date(today.year - 1, today.month, 1).isoformat(), "End": (today + timedelta(days=1)).isoformat()},
+        Granularity="MONTHLY",
+        Metrics=["UnblendedCost"],
+    )
+    return summarize_cost(resp["ResultsByTime"], today)
+
+
+def summarize_cost(months, today):
+    amounts = [(m["TimePeriod"]["Start"][:7], float(m["Total"]["UnblendedCost"]["Amount"])) for m in months]
+    spent = [month for month, amount in amounts if amount >= 0.005]
+    return {
+        "as_of": today.isoformat(),
+        "month": round(amounts[-1][1], 2) if amounts else 0,
+        "total": round(sum(amount for _, amount in amounts), 2),
+        "since": spent[0] if spent else None,
     }
 
 

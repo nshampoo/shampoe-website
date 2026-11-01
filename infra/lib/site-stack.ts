@@ -163,12 +163,12 @@ function handler(event) {
     });
 
     // The Live page's data: every 15 minutes, gather GitHub, Goodreads, Citi Bike, Volo,
-    // and Strava into /live.json. Each source is optional, so one failing never blanks the page.
+    // Strava, and AWS cost into /live.json. Each source is optional, so one failing never blanks the page.
     const liveFeed = new lambda.Function(this, 'LiveFeed', {
       runtime: lambda.Runtime.PYTHON_3_13,
       architecture: lambda.Architecture.ARM_64,
       handler: 'handler.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../live-feed'), { exclude: ['__pycache__'] }),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../live-feed'), { exclude: ['__pycache__', 'test_*.py'] }),
       memorySize: 512, // Citi Bike's hourly files add up to a few MB of JSON by evening
       timeout: cdk.Duration.minutes(1),
       environment: { BUCKET: site.bucketName },
@@ -178,6 +178,10 @@ function handler(event) {
       }),
     });
     site.grantPut(liveFeed, 'live.json');
+    // Reads its last output to reuse the day's AWS cost instead of paying for another Cost Explorer call.
+    site.grantRead(liveFeed, 'live.json');
+    // Cost Explorer has no resource-level permissions, so this one read-only action needs '*'.
+    liveFeed.addToRolePolicy(new iam.PolicyStatement({ actions: ['ce:GetCostAndUsage'], resources: ['*'] }));
     const param = (name: string) => cdk.Stack.of(this).formatArn({ service: 'ssm', resource: 'parameter', resourceName: name });
     liveFeed.addToRolePolicy(new iam.PolicyStatement({
       actions: ['ssm:GetParameter'],

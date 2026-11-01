@@ -113,6 +113,18 @@
     show("tile-citibike");
   }
 
+  function renderAws(feed) {
+    var a = feed.aws;
+    if (!a || !$("tile-aws")) return;
+    function usd(n) { return "$" + Number(n).toFixed(2); }
+    set("aws-month", usd(a.month));
+    set("aws-month-label", "spent so far in " + day(a.as_of, { month: "long" }) + ", whole account");
+    set("aws-total", usd(a.total));
+    set("aws-since", a.since ? "total since " + day(a.since + "-01", { month: "short", year: "numeric" }) : "total");
+    set("aws-as-of", "From Cost Explorer, as of " + day(a.as_of, { month: "short", day: "numeric" }));
+    show("tile-aws");
+  }
+
   function renderBooks(feed) {
     var gr = feed.goodreads;
     if (!gr || !$("tile-books")) return;
@@ -244,7 +256,7 @@
   function render(feed) {
     renderTinkering(feed);
     renderRun(feed); renderGame(feed); renderCitibike(feed); renderBooks(feed);
-    renderRepos(feed); renderMonth(feed); renderTitle(feed); renderVolo(feed);
+    renderRepos(feed); renderMonth(feed); renderTitle(feed); renderVolo(feed); renderAws(feed);
     if ($("updated")) { set("updated", "Updated " + ago(feed.updated)); show("updated-wrap"); }
     if ($("live-strip") && document.querySelector("#live-strip .tile:not([hidden])")) show("live-strip");
   }
