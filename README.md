@@ -63,5 +63,5 @@ After editing `partials/`, run `node scripts/sync-chrome.mjs` before deploying.
 - [ ] Backburner: Spotify "now playing" on the Live page (needs a Spotify developer app)
 - [x] Add the Citi Bike Parking app (Park It) as its own page
 - [ ] Some ski visualization on the Live page, tied to the Epic Weekend Planner (nothing obvious yet: Strava ski days, pass cost per day, and snowiest-resort tiles all felt off)
-- [x] Goodreads: RSS feeds died 2026-10-27; replaced with the CSV export script
+- [ ] Goodreads: RSS feeds died 2026-10-27. The CSV export script is ready (see Live data) but hasn't been run, so the tile shows as down
 - [ ] Re-shoot `site/img/epic.jpg` once it snows (the current one shows 0 in everywhere)
