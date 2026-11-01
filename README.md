@@ -52,5 +52,5 @@ After editing `partials/`, run `node scripts/sync-chrome.mjs` before deploying.
 - [ ] Backburner: Spotify "now playing" on the Live page (needs a Spotify developer app)
 - [x] Add the Citi Bike Parking app (Park It) as its own page
 - [ ] Some ski visualization on the Live page, tied to the Epic Weekend Planner (nothing obvious yet: Strava ski days, pass cost per day, and snowiest-resort tiles all felt off)
-- [ ] Goodreads tile is gone: the RSS feed (`/review/list_rss/169418598`) returns 404 as of 2026-11-01. Check whether the profile went private or Goodreads dropped the feed
+- [ ] Goodreads tile is gone: the RSS feed (`/review/list_rss/169418598`) has returned 404 since 2026-10-27 ~20:30 UTC with no change on our side. The profile is still public. Next: see if the RSS link on My Books (which carries a `key`) still works; if so, keep that URL in SSM
 - [ ] Re-shoot `site/img/epic.jpg` once it snows (the current one shows 0 in everywhere)
