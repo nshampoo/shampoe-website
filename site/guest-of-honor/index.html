@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guest of Honor: how and why · Nick Shampoe</title>
+<meta name="description" content="A party trivia game themed around one person's life. Friends play on their phones, and an agent helps write fact-checked clues.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/story.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- /header -->
+<main class="wrap story tool-honor">
+  <header class="narrow story-head">
+    <a class="back" href="/">← Back to the workshop</a>
+    <span class="tag tool">How and why I built it</span>
+    <h1>Guest of Honor</h1>
+    <p class="lede">A party trivia game themed around one person's life. Friends play on their phones, and an agent interviews you about the guest of honor and writes the clues.</p>
+    <div class="chips"><span class="progress"><span class="dot"></span>In progress</span><span>TypeScript · React · WebSockets · Lambda · DynamoDB · Claude</span><span>Phones + a TV</span></div>
+    <div class="ctas"><a class="button primary" href="/guest-of-honor/open/">Start a game →</a><a class="button" href="https://github.com/nshampoo/guest-of-honor">Code on GitHub</a></div>
+  </header>
+
+  <figure class="card wide hero-shot" style="margin: 0">
+    <img src="/img/guest-of-honor.jpg" alt="Guest of Honor's board mid-game: six categories of 200 to 1000 point clues, a few already played, and three team scores below" width="1200" height="760">
+    <figcaption><span>The board on the TV, four clues in. Every category comes from the guest of honor's life; every clue is real trivia.</span><a href="/guest-of-honor/open/">Start a game →</a></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <!-- TODO: the itch, in my own words. -->
+    <h2>The itch</h2>
+    <p>For my last birthday, my girlfriend made me a game-show trivia board about my life. The trick was that none of it was trivia about me. One category was my college, one was running, one was just random, and the clues were real trivia anyone at the party could answer. It was the best gift I got. I wanted anyone to be able to make one for a friend.</p>
+
+    <h2>How a game works</h2>
+    <ul>
+      <li><strong>The TV</strong> shows the board and a QR code. Each team scans it with one phone and names itself.</li>
+      <li><strong>The host's phone</strong> picks clues, sees the answers, and judges. The host doesn't play.</li>
+      <li><strong>Team phones</strong> get the clue and an answer box. It isn't a race: teams talk it over and lock in an answer before the timer runs out, or the host stops the clock and lets them argue.</li>
+      <li>Every correct team scores, wrong answers cost nothing, and a final round lets teams wager.</li>
+    </ul>
+
+    <h2>Making a board</h2>
+    <p><em>Building.</em> An agent interviews you about the guest of honor, following threads until it finds six categories with real trivia behind them (not "running," but which races). Then seven writers run in parallel, one per category plus the final, each checking every fact with web search and citing a source. You can re-roll any clue or edit it by hand. The agent is written; it's waiting on an AWS sign-up so it can run.</p>
+    <p>Until then, there's a board editor for writing one by hand, and a sample board to play.</p>
+
+    <h2>How it works</h2>
+    <p>The game rules are one pure function: give it the game and an action ("open this clue," "team B answered"), and it returns the new game. The same function runs in the tests, on my laptop, and in the Lambda, so the rules are written once.</p>
+    <p>Rooms run on an API Gateway WebSocket API. Each message wakes a Lambda that loads the room from DynamoDB, applies the action, and pushes each device its own view. The TV and teams never receive an answer before the reveal, even in the page data. Two teams answering in the same instant can't overwrite each other: every save checks the room's version first and retries if someone beat it.</p>
+  </article>
+
+  <article class="narrow prose">
+    <h2>What's next</h2>
+    <ul>
+      <li><strong>Turn on the agent</strong> once the AWS sign-up clears, and tune its prompts on a few real friends.</li>
+      <li><strong>Make a board on the web</strong>: the interview, re-roll, and editor in one place, behind a password.</li>
+      <li><strong>A gallery</strong> of boards people chose to share.</li>
+      <li><em>Building.</em> More to come here.</li>
+    </ul>
+  </article>
+
+  <section class="wide try">
+    <div><h2>Start a game</h2><p>Put the board on a TV, then scan the QR code with your phones.</p></div>
+    <a class="button" href="/guest-of-honor/open/">Open Guest of Honor →</a>
+  </section>
+</main>
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
+</body>
+</html>
