@@ -62,7 +62,7 @@
 
   function cover(img, book) {
     if (!img) return;
-    if (book.cover && !/nophoto/.test(book.cover)) { img.src = book.cover; img.alt = "Cover of " + book.title; }
+    if (book.cover && !/nophoto/.test(book.cover)) { img.onerror = function () { img.hidden = true; }; img.src = book.cover; img.alt = "Cover of " + book.title; }
     else img.hidden = true;
   }
 
@@ -123,6 +123,23 @@
     set("aws-since", a.since ? "total since " + day(a.since + "-01", { month: "short", year: "numeric" }) : "total");
     set("aws-as-of", "From Cost Explorer, as of " + day(a.as_of, { month: "short", day: "numeric" }));
     show("tile-aws");
+  }
+
+  var SOURCES = { github: "GitHub", goodreads: "Goodreads", citibike: "Citi Bike", volo: "Volo", strava: "Strava", aws: "AWS bill" };
+  function renderHealth(feed) {
+    var h = feed.health, list = $("health-list");
+    if (!h || !list) return;
+    Object.keys(SOURCES).filter(function (k) { return h[k]; })
+      .sort(function (a, b) { return h[a].ok - h[b].ok; })
+      .forEach(function (k) {
+        var since = new Date(h[k].since).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        var li = el("li", { class: h[k].ok ? "ok" : "down" });
+        li.appendChild(el("i"));
+        li.appendChild(el("b", null, SOURCES[k]));
+        li.appendChild(el("span", null, (h[k].ok ? "working since " : "down since ") + since));
+        list.appendChild(li);
+      });
+    show("tile-health");
   }
 
   function renderBooks(feed) {
@@ -256,7 +273,7 @@
   function render(feed) {
     renderTinkering(feed);
     renderRun(feed); renderGame(feed); renderCitibike(feed); renderBooks(feed);
-    renderRepos(feed); renderMonth(feed); renderTitle(feed); renderVolo(feed); renderAws(feed);
+    renderRepos(feed); renderMonth(feed); renderTitle(feed); renderVolo(feed); renderAws(feed); renderHealth(feed);
     if ($("updated")) { set("updated", "Updated " + ago(feed.updated)); show("updated-wrap"); }
     if ($("live-strip") && document.querySelector("#live-strip .tile:not([hidden])")) show("live-strip");
   }

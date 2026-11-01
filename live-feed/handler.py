@@ -1,7 +1,8 @@
 """Live feed Lambda: gathers the dashboard-of-randomness data and writes /live.json.
 
-Runs every 15 minutes. Each source is fetched independently; one failing (Goodreads
-down, Strava not set up yet) leaves its section out instead of failing the whole run.
+Runs every 15 minutes. Each source is fetched independently; one failing (Strava down,
+say) leaves its section out instead of failing the whole run. The feed also tracks how
+long each source has been working or down, and emails once a source is down for 2 hours.
 Standard library + boto3 only, so the folder deploys as a plain zip.
 """
 
@@ -12,7 +13,6 @@ import re
 import time
 import urllib.parse
 import urllib.request
-import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -20,7 +20,7 @@ import boto3
 
 NEW_YORK = ZoneInfo("America/New_York")
 GITHUB_USER = "nshampoo"
-GOODREADS_USER = "169418598"
+GOODREADS_PARAM = "/shampoe-site/goodreads"
 CITIBIKE_DATA = "https://d2g10dtmnepqv0.cloudfront.net/data/live/"
 STRAVA_PARAM = "/shampoe-site/strava"
 VOLO_STATS_PARAM = "/volo-notifier/stats-table"
@@ -31,28 +31,41 @@ PRIVACY_RADIUS_M = 400
 # on one field (about 1 m/s on average); anything faster is a mislabeled ride, which
 # could show a route home, so it is never treated as a game.
 GAME_MAX_AVG_SPEED = 2.5
+# A source has to be down this long before it emails, so a flaky minute stays quiet.
+ALERT_AFTER = timedelta(hours=2)
+LABELS = {"github": "GitHub", "goodreads": "Goodreads", "citibike": "Citi Bike", "volo": "Volo", "strava": "Strava", "aws": "AWS bill"}
 
 s3 = boto3.client("s3")
 ssm = boto3.client("ssm")
 dynamodb = boto3.client("dynamodb")
 ce = boto3.client("ce")
+sns = boto3.client("sns")
 
 
 def handler(event, context):
     now = datetime.now(timezone.utc)
+    prev = previous_feed()
     feed = {"updated": now.isoformat(timespec="seconds")}
+    errors = {}
     for name, fetch in [
         ("github", github),
         ("goodreads", goodreads),
         ("citibike", citibike),
         ("volo", volo),
         ("strava", strava),
-        ("aws", aws_cost),
+        ("aws", lambda now: aws_cost(now, prev)),
     ]:
         try:
             feed[name] = fetch(now)
         except Exception as e:  # noqa: BLE001
+            errors[name] = str(e)
             print(f"WARNING: {name} skipped: {e}")
+    feed["health"], alerts = health(prev.get("health") or {}, errors, now)
+    for subject, message in alerts:
+        try:
+            sns.publish(TopicArn=os.environ["ALERTS_TOPIC"], Subject=subject, Message=message)
+        except Exception as e:  # noqa: BLE001
+            print(f"WARNING: alert not sent: {e}")
     s3.put_object(
         Bucket=os.environ["BUCKET"],
         Key="live.json",
@@ -60,8 +73,38 @@ def handler(event, context):
         ContentType="application/json",
         CacheControl="public, max-age=300",
     )
-    print(json.dumps({k: ("ok" if k in feed else "skipped") for k in ["github", "goodreads", "citibike", "volo", "strava", "aws"]}))
-    return {"sections": [k for k in feed if k != "updated"]}
+    print(json.dumps({k: ("skipped" if k in errors else "ok") for k in LABELS}))
+    return {"sections": [k for k in feed if k not in ("updated", "health")]}
+
+
+def previous_feed():
+    try:
+        return json.loads(s3.get_object(Bucket=os.environ["BUCKET"], Key="live.json")["Body"].read())
+    except s3.exceptions.NoSuchKey:
+        return {}
+
+
+def health(prev, errors, now):
+    """Each source's state and when it last changed, plus the emails to send.
+
+    Down sources email once after ALERT_AFTER, and again when they recover. Error text
+    only goes in the email, since live.json is public.
+    """
+    out, alerts = {}, []
+    for name, label in LABELS.items():
+        ok = name not in errors
+        last = prev.get(name) or {}
+        if last.get("ok") == ok:
+            state = dict(last)
+        else:
+            state = {"ok": ok, "since": now.isoformat(timespec="seconds")}
+            if ok and last.get("alerted"):
+                alerts.append((f"shampoe.com: {label} is working again", f"{label} is back on the dashboard after being down since {last['since']}."))
+        if not ok and not state.get("alerted") and now - datetime.fromisoformat(state["since"]) >= ALERT_AFTER:
+            state["alerted"] = True
+            alerts.append((f"shampoe.com: {label} is down", f"{label} has been failing since {state['since']}.\n\nLatest error: {errors[name]}"))
+        out[name] = state
+    return out, alerts
 
 
 # ---------------------------------------------------------------- helpers
@@ -91,44 +134,12 @@ def github(now):
 
 # ---------------------------------------------------------------- Goodreads
 
-def _shelf(shelf, extra=""):
-    xml = get(f"https://www.goodreads.com/review/list_rss/{GOODREADS_USER}?shelf={shelf}{extra}")
-    books = []
-    for item in ET.fromstring(xml).iter("item"):
-        text = lambda tag: (item.findtext(tag) or "").strip()  # noqa: E731
-        read_at = text("user_read_at")
-        books.append({
-            "title": re.sub(r"\s*\([^)]*#\d+\)$", "", text("title")),  # "Dune (Dune, #1)" -> "Dune"
-            "author": text("author_name"),
-            "rating": int(text("user_rating") or 0),
-            "cover": text("book_large_image_url") or text("book_medium_image_url"),
-            "read": _rss_date(read_at),
-            "url": text("link"),
-        })
-    return books
-
-
-def _rss_date(value):
-    if not value:
-        return None
-    try:
-        return datetime.strptime(value, "%a, %d %b %Y %H:%M:%S %z").date().isoformat()
-    except ValueError:
-        return None
-
-
 def goodreads(now):
-    current = _shelf("currently-reading")
-    read = [b for b in _shelf("read", "&sort=date_read&order=d") if b["read"]]
-    read.sort(key=lambda b: b["read"], reverse=True)
-    total = None
-    try:
-        page = get(f"https://www.goodreads.com/user/show/{GOODREADS_USER}").decode("utf-8", "replace")
-        m = re.search(r"([\d,]+)\s+books", page)
-        total = int(m.group(1).replace(",", "")) if m else None
-    except Exception:  # noqa: BLE001
-        pass
-    return {"current": current[:2], "recent": read[:3], "total_read": total}
+    """Books from the latest Goodreads CSV export, saved by scripts/goodreads.py.
+
+    Goodreads dropped its RSS feeds on 2026-10-27, so this is no longer automatic.
+    """
+    return json.loads(ssm.get_parameter(Name=GOODREADS_PARAM)["Parameter"]["Value"])
 
 
 # ---------------------------------------------------------------- Citi Bike (from Citi Bike Tides' own data)
@@ -187,17 +198,14 @@ def volo(now):
 
 # ---------------------------------------------------------------- AWS cost
 
-def aws_cost(now):
+def aws_cost(now, prev):
     """Whole-account spend: this month so far and the last 13 months in total.
 
     Cost Explorer charges $0.01 per call, so the last result is reused until the UTC
     day changes: about 30 calls a month instead of ~2,900 at the feed's 15-minute pace.
     """
     today = now.date()
-    try:
-        last = json.loads(s3.get_object(Bucket=os.environ["BUCKET"], Key="live.json")["Body"].read()).get("aws")
-    except s3.exceptions.NoSuchKey:
-        last = None
+    last = prev.get("aws")
     if last and last.get("as_of") == today.isoformat():
         return last
     resp = ce.get_cost_and_usage(

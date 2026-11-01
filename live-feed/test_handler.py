@@ -1,8 +1,7 @@
-import io
 import json
 import os
 import unittest
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from unittest import mock
 
 os.environ.setdefault("AWS_DEFAULT_REGION", "us-east-1")
@@ -28,10 +27,8 @@ class AwsCostCache(unittest.TestCase):
     now = datetime(2026, 11, 1, 18, 0, tzinfo=timezone.utc)
 
     def run_with_last(self, last):
-        body = io.BytesIO(json.dumps({"aws": last}).encode())
-        with mock.patch.object(handler.s3, "get_object", return_value={"Body": body}), \
-             mock.patch.object(handler.ce, "get_cost_and_usage", return_value={"ResultsByTime": [month("2026-11-01", 1)]}) as ce:
-            return handler.aws_cost(self.now), ce
+        with mock.patch.object(handler.ce, "get_cost_and_usage", return_value={"ResultsByTime": [month("2026-11-01", 1)]}) as ce:
+            return handler.aws_cost(self.now, {"aws": last}), ce
 
     def test_reuses_todays_result_without_calling_cost_explorer(self):
         last = {"as_of": "2026-11-01", "month": 9, "total": 9, "since": "2026-09"}
@@ -45,6 +42,47 @@ class AwsCostCache(unittest.TestCase):
         ce.assert_called_once()
         period = ce.call_args.kwargs["TimePeriod"]
         self.assertEqual(period, {"Start": "2025-11-01", "End": "2026-11-02"})
+
+
+class Health(unittest.TestCase):
+    t0 = datetime(2026, 11, 1, 12, 0, tzinfo=timezone.utc)
+
+    def step(self, prev, errors, minutes):
+        return handler.health(prev, errors, self.t0 + timedelta(minutes=minutes))
+
+    def test_first_run_starts_every_source(self):
+        out, alerts = self.step({}, {"strava": "boom"}, 0)
+        self.assertEqual(set(out), set(handler.LABELS))
+        self.assertEqual(out["github"], {"ok": True, "since": "2026-11-01T12:00:00+00:00"})
+        self.assertFalse(out["strava"]["ok"])
+        self.assertEqual(alerts, [])
+
+    def test_since_holds_while_state_is_unchanged(self):
+        out, _ = self.step({}, {}, 0)
+        out, _ = self.step(out, {}, 15)
+        self.assertEqual(out["github"]["since"], "2026-11-01T12:00:00+00:00")
+
+    def test_emails_once_after_two_hours_down_then_on_recovery(self):
+        out, alerts = self.step({}, {"strava": "HTTP 500"}, 0)
+        out, alerts = self.step(out, {"strava": "HTTP 500"}, 105)
+        self.assertEqual(alerts, [])
+        out, alerts = self.step(out, {"strava": "HTTP 500"}, 120)
+        self.assertEqual([s for s, _ in alerts], ["shampoe.com: Strava is down"])
+        self.assertIn("HTTP 500", alerts[0][1])
+        out, alerts = self.step(out, {"strava": "HTTP 500"}, 135)
+        self.assertEqual(alerts, [])
+        out, alerts = self.step(out, {}, 150)
+        self.assertEqual([s for s, _ in alerts], ["shampoe.com: Strava is working again"])
+        self.assertEqual(out["strava"], {"ok": True, "since": "2026-11-01T14:30:00+00:00"})
+
+    def test_short_outage_stays_quiet(self):
+        out, _ = self.step({}, {"volo": "timeout"}, 0)
+        out, alerts = self.step(out, {}, 30)
+        self.assertEqual(alerts, [])
+
+    def test_error_text_stays_out_of_public_state(self):
+        out, _ = self.step({}, {"strava": "token=abc123"}, 0)
+        self.assertNotIn("abc123", json.dumps(out))
 
 
 if __name__ == "__main__":

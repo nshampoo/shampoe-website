@@ -53,6 +53,13 @@ main { display: flex; flex-direction: column; gap: 32px; padding-block: 64px 80p
 .cb-sub b.warn { color: #c2410c; }
 .cb-sub span { font-size: 12.5px; color: var(--muted); }
 
+.health { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; font-size: 14.5px; }
+.health li { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.health i { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--live); }
+.health li.down i { background: #c2410c; }
+.health span { color: var(--muted); }
+@media (max-width: 560px) { .health { grid-template-columns: minmax(0, 1fr); } }
+
 #repo-list, #book-more { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; }
 #repo-list li { display: flex; justify-content: space-between; gap: 12px; }
 #repo-list li a { color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
@@ -238,7 +245,13 @@ details th { color: var(--muted); font-weight: 500; }
       <span class="source" id="aws-as-of"></span>
     </article>
 
-    <article class="tile span-2" id="tile-title" hidden>
+    <article class="tile span-2" id="tile-health" hidden>
+      <span class="label">Feed health</span>
+      <ul class="health" id="health-list"></ul>
+      <span class="source">Every source checks in every 15 minutes. If one is down for 2 hours, I get an email.</span>
+    </article>
+
+    <article class="tile span-3" id="tile-title" hidden>
       <span class="label">Activity title of the month</span>
       <div><div class="name" id="title-name"></div><div class="when" id="title-when"></div></div>
     </article>

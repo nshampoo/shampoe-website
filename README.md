@@ -14,6 +14,7 @@ Personal site: a workshop of the tools I've built, a live "dashboard of randomne
 | `partials/` | Shared header and footer; copy into every page with `node scripts/sync-chrome.mjs` |
 | `live-feed/handler.py` | Lambda that writes `/live.json` every 15 minutes |
 | `live-feed/test_handler.py` | Unit tests for the feed (not deployed) |
+| `scripts/goodreads.py` | Saves the books tile's data from a Goodreads CSV export to SSM |
 | `docs/DESIGN.md` | Goals, plan, and decisions |
 | `infra/` | CDK stack: S3, CloudFront (+ router function), ACM, Route 53, live feed |
 
@@ -25,9 +26,19 @@ Personal site: a workshop of the tools I've built, a live "dashboard of randomne
 
 ## Live data
 
-`live-feed/handler.py` gathers GitHub pushes, Goodreads books, Citi Bike Tides stats, Volo daily drop-in counts (DynamoDB table named in SSM at `/volo-notifier/stats-table`), Strava, and the whole AWS account's cost (Cost Explorer, fetched once a UTC day since each call costs $0.01). Each source is optional.
+`live-feed/handler.py` gathers GitHub pushes, Goodreads books (from SSM at `/shampoe-site/goodreads`, see below), Citi Bike Tides stats, Volo daily drop-in counts (DynamoDB table named in SSM at `/volo-notifier/stats-table`), Strava, and the whole AWS account's cost (Cost Explorer, fetched once a UTC day since each call costs $0.01). Each source is optional.
 
-Test the feed's logic with `cd live-feed && python3 -m unittest`.
+It also records each source's health (working or down, and since when) in `live.json` for the Feed health tile, and emails through SNS once a source has been down for 2 hours, and again when it recovers. A CloudWatch alarm emails if the feed itself errors or stops running for 2 hours. The address lives in SSM at `/shampoe-site/alert-email` (plain String) so it stays out of git; confirm the subscription email once after the first deploy.
+
+Goodreads dropped its RSS feeds on 2026-10-27, so books update by hand: My Books > Import and export > Export Library, then
+
+```
+AWS_PROFILE=personal python3 scripts/goodreads.py ~/Downloads/goodreads_library_export.csv
+```
+
+It saves only what the tile shows (no reviews, notes, or to-read shelf).
+
+Test with `cd live-feed && python3 -m unittest` and `cd scripts && python3 -m unittest`.
 
 Strava needs credentials in SSM at `/shampoe-site/strava` (SecureString JSON with `client_id`, `client_secret`, `refresh_token`). Run maps drop the first and last 400 m; only slow "Flag Football" activities count as games.
 
@@ -52,5 +63,5 @@ After editing `partials/`, run `node scripts/sync-chrome.mjs` before deploying.
 - [ ] Backburner: Spotify "now playing" on the Live page (needs a Spotify developer app)
 - [x] Add the Citi Bike Parking app (Park It) as its own page
 - [ ] Some ski visualization on the Live page, tied to the Epic Weekend Planner (nothing obvious yet: Strava ski days, pass cost per day, and snowiest-resort tiles all felt off)
-- [ ] Goodreads tile is gone: the RSS feed (`/review/list_rss/169418598`) has returned 404 since 2026-10-27 ~20:30 UTC with no change on our side. The profile is still public. Next: see if the RSS link on My Books (which carries a `key`) still works; if so, keep that URL in SSM
+- [x] Goodreads: RSS feeds died 2026-10-27; replaced with the CSV export script
 - [ ] Re-shoot `site/img/epic.jpg` once it snows (the current one shows 0 in everywhere)

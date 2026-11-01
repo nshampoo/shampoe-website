@@ -1,5 +1,7 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as cwActions from 'aws-cdk-lib/aws-cloudwatch-actions';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as events from 'aws-cdk-lib/aws-events';
@@ -12,6 +14,9 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as r53targets from 'aws-cdk-lib/aws-route53-targets';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 export interface SiteStackProps extends cdk.StackProps {
@@ -164,6 +169,9 @@ function handler(event) {
 
     // The Live page's data: every 15 minutes, gather GitHub, Goodreads, Citi Bike, Volo,
     // Strava, and AWS cost into /live.json. Each source is optional, so one failing never blanks the page.
+    // Alerts go to an address kept in SSM so it stays out of this public repo.
+    const alerts = new sns.Topic(this, 'Alerts', { displayName: 'shampoe.com' });
+    alerts.addSubscription(new subs.EmailSubscription(ssm.StringParameter.valueForStringParameter(this, '/shampoe-site/alert-email')));
     const liveFeed = new lambda.Function(this, 'LiveFeed', {
       runtime: lambda.Runtime.PYTHON_3_13,
       architecture: lambda.Architecture.ARM_64,
@@ -171,7 +179,7 @@ function handler(event) {
       code: lambda.Code.fromAsset(path.join(__dirname, '../../live-feed'), { exclude: ['__pycache__', 'test_*.py'] }),
       memorySize: 512, // Citi Bike's hourly files add up to a few MB of JSON by evening
       timeout: cdk.Duration.minutes(1),
-      environment: { BUCKET: site.bucketName },
+      environment: { BUCKET: site.bucketName, ALERTS_TOPIC: alerts.topicArn },
       logGroup: new logs.LogGroup(this, 'LiveFeedLogs', {
         retention: logs.RetentionDays.ONE_MONTH,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -185,7 +193,7 @@ function handler(event) {
     const param = (name: string) => cdk.Stack.of(this).formatArn({ service: 'ssm', resource: 'parameter', resourceName: name });
     liveFeed.addToRolePolicy(new iam.PolicyStatement({
       actions: ['ssm:GetParameter'],
-      resources: [param('volo-notifier/stats-table'), param('shampoe-site/strava')],
+      resources: [param('volo-notifier/stats-table'), param('shampoe-site/strava'), param('shampoe-site/goodreads')],
     }));
     // Strava may rotate the refresh token, so the feed saves the new one back.
     liveFeed.addToRolePolicy(new iam.PolicyStatement({ actions: ['ssm:PutParameter'], resources: [param('shampoe-site/strava')] }));
@@ -198,6 +206,16 @@ function handler(event) {
       schedule: events.Schedule.rate(cdk.Duration.minutes(15)),
       targets: [new targets.LambdaFunction(liveFeed, { retryAttempts: 0 })],
     });
+    alerts.grantPublish(liveFeed);
+    // The feed emails about its own sources; this covers the feed itself erroring or not running for 2 hours.
+    const feedDown = liveFeed.metricErrors({ period: cdk.Duration.minutes(15) }).createAlarm(this, 'LiveFeedDown', {
+      alarmDescription: 'shampoe.com live feed has failed or not run for 2 hours',
+      threshold: 1,
+      evaluationPeriods: 8,
+      treatMissingData: cloudwatch.TreatMissingData.BREACHING,
+    });
+    feedDown.addAlarmAction(new cwActions.SnsAction(alerts));
+    feedDown.addOkAction(new cwActions.SnsAction(alerts));
     new cdk.CfnOutput(this, 'LiveFeedName', { value: liveFeed.functionName });
 
     const target = route53.RecordTarget.fromAlias(new r53targets.CloudFrontTarget(distribution));
