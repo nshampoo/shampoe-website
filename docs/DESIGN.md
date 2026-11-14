@@ -12,7 +12,7 @@ The live feed Lambda writes `/live.json` every 15 minutes from GitHub, Goodreads
 
 Shows the whole account's spend: this month so far, and the total over the last 13 months (Cost Explorer's default history).
 
-- One `GetCostAndUsage` call (monthly, `UnblendedCost`) returns both numbers.
+- One `GetCostAndUsage` call (monthly, `UnblendedCost`) returns both numbers. It filters out the `Credit` and `Refund` record types: without that, credits come back as negative cost and cancel out usage.
 - Cost Explorer charges $0.01 per call. At the feed's 15-minute pace that is about 2,900 calls, or $29 a month. The feed reuses the cost in the previous `live.json` until the UTC day changes, so it makes about 30 calls a month ($0.30).
 - AWS refreshes cost data a few times a day, so a daily number is at most about a day behind the console.
 
@@ -36,6 +36,7 @@ Goodreads stopped serving its RSS feeds (404) on 2026-10-27, even for a logged-i
 - 2026-11-01: Feed health tile for every source, broken first; email an address kept in SSM after 2 hours down.
 - 2026-11-01: Goodreads comes from a manual CSV export, since the RSS feeds are gone. Scraping shelf pages was too fragile.
 - 2026-11-01: Show `UnblendedCost`: the full cost of what was used, however it was paid for (card or credits).
+- 2026-11-14: Exclude credits and refunds from that call. The tile showed $0.00 for a ~$1 month because credits were netting it out.
 
 ## Open decisions
 

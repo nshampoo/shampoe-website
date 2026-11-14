@@ -40,6 +40,7 @@ class AwsCostCache(unittest.TestCase):
         out, ce = self.run_with_last({"as_of": "2026-10-31", "month": 9, "total": 9})
         self.assertEqual(out["as_of"], "2026-11-01")
         ce.assert_called_once()
+        self.assertEqual(ce.call_args.kwargs["Filter"], {"Not": {"Dimensions": {"Key": "RECORD_TYPE", "Values": ["Credit", "Refund"]}}})
         period = ce.call_args.kwargs["TimePeriod"]
         self.assertEqual(period, {"Start": "2025-11-01", "End": "2026-11-02"})
 

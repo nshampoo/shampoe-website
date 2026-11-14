@@ -212,6 +212,8 @@ def aws_cost(now, prev):
         TimePeriod={"Start": date(today.year - 1, today.month, 1).isoformat(), "End": (today + timedelta(days=1)).isoformat()},
         Granularity="MONTHLY",
         Metrics=["UnblendedCost"],
+        # Credits come back as negative cost; leave them out to show what was used, however it was paid for.
+        Filter={"Not": {"Dimensions": {"Key": "RECORD_TYPE", "Values": ["Credit", "Refund"]}}},
     )
     return summarize_cost(resp["ResultsByTime"], today)
 
