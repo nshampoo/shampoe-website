@@ -17,5 +17,6 @@ new SiteStack(app, 'PersonalSite', {
     trades: 'd3p413m2n0s459.cloudfront.net', // Trade Ideator (~/Code/fantasy-football-trade-ideator)
     flag: 'd33bwgha2p2ift.cloudfront.net', // Flag Football Simulator (~/Code/flag-football-simulator)
     'guest-of-honor': 'd2jg6m7pcvok9m.cloudfront.net', // Guest of Honor (~/Code/guest-of-honor)
+    wildwood: 'd1mfvy64vj80p6.cloudfront.net', // Wildwood (~/Code/wildwood)
   },
 });

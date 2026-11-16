@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wildwood: how and why · Nick Shampoe</title>
+<meta name="description" content="Why I built an ecosystem sandbox, and how rabbits, foxes, and grass following simple rules produce boom and bust cycles nobody scripted.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/story.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<!-- header page="workshop" -->
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><ellipse class="body" cx="13" cy="14" rx="9" ry="11"></ellipse><ellipse cx="13" cy="17" rx="6" ry="7.5" fill="#ffffff"></ellipse><circle cx="10" cy="9" r="1.4" fill="#ffffff"></circle><circle cx="16" cy="9" r="1.4" fill="#ffffff"></circle><path d="M11.5 11.5h3l-1.5 2z" fill="#f08a24"></path></svg>
+      <span>Nick Shampoe</span>
+    </a>
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/" aria-current="page">Workshop</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- /header -->
+<main class="wrap story tool-wildwood">
+  <header class="narrow story-head">
+    <a class="back" href="/">← Back to the workshop</a>
+    <span class="tag tool">How and why I built it</span>
+    <h1>Wildwood</h1>
+    <p class="lede">An ecosystem sandbox. Shape a world, drop in rabbits and foxes, and watch the populations rise and crash on their own.</p>
+    <div class="chips"><span class="live"><span class="dot"></span>Live</span><span>TypeScript · Canvas · Vite · S3 · CloudFront · CDK</span><span>Agent-based simulation</span></div>
+    <div class="ctas"><a class="button primary" href="/wildwood/open/">Open Wildwood →</a><a class="button" href="https://github.com/nshampoo/wildwood">Code on GitHub</a></div>
+  </header>
+
+  <figure class="card wide hero-shot" style="margin: 0">
+    <img src="/img/wildwood.jpg" alt="Wildwood mid-run: rabbits and foxes on a map of meadows, forests, and lakes, beside a live chart of rabbits, foxes, and grass over time" width="1200" height="760">
+    <figcaption><span>White dots are rabbits, orange are foxes. Brown patches are grazed grass; dark green is forest.</span><a href="/wildwood/open/">Grow your own →</a></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <h2>The itch</h2>
+    <p>Years ago I watched a YouTube video of a simulated ecosystem, and what stuck with me was how much the climate mattered. Change the rain or the seasons and the same animals would thrive, swing wildly, or die out. I stayed curious about it, so I built my own: set up a world, put a few animals in it, change the weather, and see what happens. Not a game with a score, more like a terrarium I can poke.</p>
+
+    <h2>What it does</h2>
+    <ul>
+      <li><strong>Shape the world</strong> with sliders for water, forest, and patchiness, or hit Randomize.</li>
+      <li><strong>Drop in animals</strong> by clicking the map. It starts with rabbits, foxes, and grass.</li>
+      <li><strong>Change the climate live.</strong> Drag rainfall to zero mid-run and watch a drought play out, or turn on seasons and see who makes it through winter.</li>
+      <li><strong>Watch the chart.</strong> Rabbits, foxes, and grass each get a panel on a shared timeline, so you can see the foxes peak just after the rabbits do.</li>
+      <li><strong>Presets</strong> for a quick start: Balanced meadow, Lake country, Watering hole, and Harsh winters.</li>
+    </ul>
+
+    <h2>How it works</h2>
+    <p>Every animal is its own little agent. Ten times a second, each one picks the first thing on its list that applies: run from a predator it can see, go drink if it's thirsty, find a mate if it's well fed, eat if it's hungry, or wander. Moving costs energy, and an animal dies when it runs out of energy, goes too long without water, gets too old, or gets eaten.</p>
+    <p>Nothing in the code says "rabbits boom, then foxes boom, then both crash." Those cycles come out of thousands of small decisions. That's the fun of an agent-based model: you write simple local rules, and the population curves are something you discover.</p>
+    <p>The world is a grid of cells, each meadow, forest, or water, generated from noise so it looks natural. Grass regrows at a rate set by rainfall and the season. Forest grows less grass, but an animal in the trees can't be seen from more than a cell and a half away.</p>
+  </article>
+
+  <figure class="card wide flow" style="margin: 0">
+    <ol>
+          <li class="step"><b>Grass grows</b><span>faster with rain, slower in forest and winter</span></li>
+          <li class="step key"><b>Rabbits boom</b><span>plenty of food, lots of babies</span></li>
+          <li class="step"><b>Foxes follow</b><span>plenty of rabbits to hunt</span></li>
+          <li class="step key"><b>Rabbits crash</b><span>eaten and out of grass</span></li>
+          <li class="step"><b>Foxes starve</b><span>and the grass grows back</span></li>
+    </ol>
+    <figcaption><span>The predator and prey cycle. No step is scripted; each one follows from the animals' own rules.</span></figcaption>
+  </figure>
+
+  <article class="narrow prose">
+    <h2>What I learned</h2>
+    <p><strong>Predator and prey sit on a knife edge.</strong> My first foxes were too slow: they couldn't catch enough rabbits and starved. Speed them up a little and they ate every rabbit, then starved anyway. Tiny tweaks flipped the world from one extinction to the other.</p>
+    <p><strong>Real ecosystems have stabilizers.</strong> Two fixed it. Foxes are territorial, so in the sim a fox won't raise kits with two other foxes nearby, which stops them from overshooting. And forests act as refuges where rabbits can hide. Adding forest took the calm presets from surviving in 4 of 6 test worlds to 6 of 6.</p>
+    <p><strong>More food isn't always better.</strong> More forest made the Harsh winters preset worse, because forest grows less grass to get through the winter on. Ecologists have a name for the bigger version of this, the paradox of enrichment: making life easier for the prey can make the whole system less stable.</p>
+    <p><strong>Test on worlds you didn't tune on.</strong> Each preset is checked by running it on 10 random worlds for 40,000 steps and counting how often both species survive. One preset scored 9 of 10 on the worlds I tuned it on and only 5 of 10 on fresh ones, the same trap as overfitting in machine learning. Breaking its forest into many small patches, so rabbits always have cover nearby, fixed it: 10 of 10 on fresh worlds.</p>
+
+    <h2>What's next</h2>
+    <ul>
+      <li><strong>More animals</strong>, based on research into real species: who eats whom, how far they roam, and how fast they breed.</li>
+      <li><strong>Follow one animal</strong> with the camera and see its energy, thirst, and what it's doing.</li>
+      <li><strong>Pixel art</strong> in place of the dots.</li>
+      <li><strong>Events</strong> like disease and droughts you can trigger.</li>
+    </ul>
+  </article>
+
+  <section class="wide try">
+    <div><h2>Grow a world</h2><p>Pick a preset or randomize one, then drop in some rabbits and foxes.</p></div>
+    <a class="button" href="/wildwood/open/">Open Wildwood →</a>
+  </section>
+</main>
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Built by me, running on AWS. <span class="mono">shampoe.f.nick@gmail.com</span></span>
+    <nav aria-label="Elsewhere">
+      <a href="https://www.linkedin.com/in/nicholasshampoe/">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/16795171">Strava</a>
+      <a href="https://github.com/nshampoo">GitHub</a>
+    </nav>
+  </div>
+</footer>
+<!-- /footer -->
+</body>
+</html>
